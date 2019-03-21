@@ -22,6 +22,8 @@ namespace WarLight.Shared.AI
                     return new Prod.BotMain(true);
                 case "cowzow":
                     return new Cowzow.Bot.CowzowBot();
+                case "jbot":
+                    return new JBot.Bot.BotMain();
                 default:
                     throw new Exception("No bot found named " + name + ", supported names are: " + Names.JoinStrings(", "));
             }
