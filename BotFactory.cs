@@ -8,7 +8,7 @@ namespace WarLight.Shared.AI
 {
     public static class BotFactory
     {
-        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "ProdRandom", "Cowzow" };
+        public static readonly string[] Names = new[] { "Wunderwaffe", "Prod", "ProdRandom", "Cowzow", "JBot" };
 
         public static IWarLightAI Construct(string name)
         {
