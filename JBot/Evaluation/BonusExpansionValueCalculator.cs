@@ -272,48 +272,48 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
-            double expansionValue = GetBadBonusFactor(bonus);
+            double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
 
             if (IsExpansionWorthless(bonus))
             {
                 return expansionValue;
             }
 
-            expansionValue = GetIncomeCostsRatio(bonus);
+            //expansionValue = GetIncomeCostsRatio(bonus);
 
-            var neutralArmies = bonus.NeutralArmies.DefensePower;
-            double neutralArmiesFactor = GetNeutralArmiesFactor(neutralArmies);
+            //var neutralArmies = bonus.NeutralArmies.DefensePower;
+            //double neutralArmiesFactor = GetNeutralArmiesFactor(neutralArmies);
 
-            int allTerritories = bonus.Territories.Count;
-            double territoryFactor = GetTerritoryFactor(allTerritories);
+            //int allTerritories = bonus.Territories.Count;
+            //double territoryFactor = GetTerritoryFactor(allTerritories);
 
 
-            int immediatelyCounteredTerritories = bonus.GetOwnedTerritoriesBorderingOpponent().Count;
-            double immediatelyCounteredTerritoriesFactor = GetImmediatelyCounteredTerritoryFactor(immediatelyCounteredTerritories);
+            //int immediatelyCounteredTerritories = bonus.GetOwnedTerritoriesBorderingOpponent().Count;
+            //double immediatelyCounteredTerritoriesFactor = GetImmediatelyCounteredTerritoryFactor(immediatelyCounteredTerritories);
 
-            var allCounteredTerritories = GetCounteredTerritories(bonus, BotState.Me.ID);
-            double allCounteredTerritoriesFactor = GetAllCounteredTerritoryFactor(allCounteredTerritories);
+            //var allCounteredTerritories = GetCounteredTerritories(bonus, BotState.Me.ID);
+            //double allCounteredTerritoriesFactor = GetAllCounteredTerritoryFactor(allCounteredTerritories);
 
-            int amountNeighborBonusesWithOpponent = 0;
-            var neighborBonuses = bonus.GetNeighborBonuses();
-            foreach (var neighborBonus in neighborBonuses)
-            {
-                if (neighborBonus.ContainsOpponentPresence())
-                {
-                    amountNeighborBonusesWithOpponent++;
-                }
-            }
-            double opponentNeighborBonusFactor = GetOpponentInNeighborBonusFactor(amountNeighborBonusesWithOpponent);
-            double borderTerritoriesFactor = getBorderTerritoriesFactor(bonus);
+            //int amountNeighborBonusesWithOpponent = 0;
+            //var neighborBonuses = bonus.GetNeighborBonuses();
+            //foreach (var neighborBonus in neighborBonuses)
+            //{
+            //    if (neighborBonus.ContainsOpponentPresence())
+            //    {
+            //        amountNeighborBonusesWithOpponent++;
+            //    }
+            //}
+            //double opponentNeighborBonusFactor = GetOpponentInNeighborBonusFactor(amountNeighborBonusesWithOpponent);
+            //double borderTerritoriesFactor = getBorderTerritoriesFactor(bonus);
 
-            double completeFactor = neutralArmiesFactor + territoryFactor + immediatelyCounteredTerritoriesFactor + allCounteredTerritoriesFactor + opponentNeighborBonusFactor + borderTerritoriesFactor;
-            if (useNeighborBonusFactor)
-            {
-                completeFactor += GetNeighborBonusesFactor(bonus);
-            }
-            completeFactor = Math.Min(completeFactor, 0.8);
+            //double completeFactor = neutralArmiesFactor + territoryFactor + immediatelyCounteredTerritoriesFactor + allCounteredTerritoriesFactor + opponentNeighborBonusFactor + borderTerritoriesFactor;
+            //if (useNeighborBonusFactor)
+            //{
+            //    completeFactor += GetNeighborBonusesFactor(bonus);
+            //}
+            //completeFactor = Math.Min(completeFactor, 0.8);
 
-            expansionValue = expansionValue - (expansionValue * completeFactor);
+            //expansionValue = expansionValue - (expansionValue * completeFactor);
 
             return expansionValue;
         }
@@ -339,7 +339,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return false;
         }
 
-        private double GetBadBonusFactor(BotBonus bonus)
+        private double GetInefficientWastelandedBonusFactor(BotBonus bonus)
         {
             // Checks bonus for inefficient or wastelanded territories
             double value = 0.0;
