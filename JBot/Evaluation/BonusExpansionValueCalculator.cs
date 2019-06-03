@@ -272,7 +272,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
-            double expansionValue = 0.0;
+            double expansionValue = GetBadBonusFactor(bonus);
+
             if (IsExpansionWorthless(bonus))
             {
                 return expansionValue;
@@ -337,6 +338,26 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             return false;
         }
+
+        private double GetBadBonusFactor(BotBonus bonus)
+        {
+            // Checks bonus for inefficient or wastelanded territories
+            double value = 0.0;
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies > 2)
+                {
+                    value -= 100;
+                }
+            }
+            if (bonus.Amount + 1 < bonus.Territories.Count)
+            {
+                value -= 50;
+            }
+
+            return value;
+        }
+
 
         private int GetCounteredTerritories(BotBonus bonus, PlayerIDType playerID)
         {
