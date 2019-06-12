@@ -11,14 +11,17 @@ namespace WarLight.Shared.AI.JBot.Evaluation
     /// This class is responsible for finding out which Bonuses to expand into. This happens by giving all Bonuses
     /// values. Furthermore this class is used during picking stage.
     /// </remarks>
-    public class BonusExpansionValueCalculator
+    public class BonusPickValueCalculator
     {
         private double TerritoryMultiplicator = 0.9;
         private double NeutralKillsMultiplicator = 1.0;
         private double NeutralsMultiplicator = 0.5;
 
         public BotMain BotState;
-        public BonusExpansionValueCalculator(BotMain state)
+
+        public object MainLoop { get; private set; }
+
+        public BonusPickValueCalculator(BotMain state)
         {
             this.BotState = state;
 
@@ -275,6 +278,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 return expansionValue;
             }
 
+
+
             expansionValue = GetIncomeCostsRatio(bonus);
 
             var neutralArmies = bonus.NeutralArmies.DefensePower;
@@ -354,6 +359,24 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return value;
         }
 
+        private Boolean getFirstTurnBonus(BotBonus bonus)
+        {
+            Boolean isFirstTurnBonus = true;
+            foreach (var terr in bonus.Territories)
+            {
+                foreach (var adjTerr in terr.Neighbors)
+                {
+                    if (adjTerr.Armies.NumArmies == 0)
+                    {
+                        goto CONTINUELOOP;
+                    }
+                }
+                isFirstTurnBonus = false;
+            CONTINUELOOP:;
+            }
+            return isFirstTurnBonus;
+        }
+
 
         private int GetCounteredTerritories(BotBonus bonus, PlayerIDType playerID)
         {
@@ -367,6 +390,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
             return outvar;
         }
+
+
 
 
 

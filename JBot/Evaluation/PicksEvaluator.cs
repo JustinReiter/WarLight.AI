@@ -26,7 +26,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             var pickableTerritories = BotState.DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => o.ID).ToList();
 
-
+            //var ftb;
             var weights = pickableTerritories.ToDictionary(o => o, terrID =>
             {
                 var map = BotMap.FromStanding(BotState, BotState.DistributionStanding);
