@@ -272,7 +272,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
-            Boolean isFirstTurnBonus = GetFirstTurnBonus(bonus);
+            Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);
 
             if (IsExpansionWorthless(bonus))
             {
@@ -345,19 +345,19 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             // Checks bonus for inefficient and wastelanded territories
             double value = 0.0;
-            if (isWastelandedTerritory(bonus))
+            if (IsWastelandedTerritory(bonus))
             {
                 value -= 100;
             }
 
-            return isInefficientTerritory(bonus) ? value - 50 : value;
+            return IsInefficientTerritory(bonus) ? value - 50 : value;
         }
 
-        private Boolean isFirstTurnBonus(BotBonus bonus)
+        private Boolean IsFirstTurnBonus(BotBonus bonus)
         {
             Boolean isFirstTurnBonus = true;
 
-            if (bonus.Amount != 3 || isInefficientTerritory(bonus) || isWastelandedTerritory(bonus))
+            if (bonus.Amount != 3 || IsInefficientTerritory(bonus) || IsWastelandedTerritory(bonus))
             {
                 return false;
             }
@@ -366,7 +366,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 foreach (var adjTerr in terr.Neighbors)
                 {
-                    if (!containsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                    if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                     {
                         goto BREAKLOOPS;
                     }
@@ -378,12 +378,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return isFirstTurnBonus;
         }
 
-        private Boolean isInefficientTerritory(BotBonus bonus)
+        private Boolean IsInefficientTerritory(BotBonus bonus)
         {
             return bonus.Territories.Count != bonus.Amount + 1;
         }
 
-        private Boolean isWastelandedTerritory(BotBonus bonus)
+        private Boolean IsWastelandedTerritory(BotBonus bonus)
         {
             foreach (var terr in bonus.Territories)
             {
@@ -395,7 +395,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return false;
         }
 
-        private Boolean containsTerritory(BotBonus bonus, BotTerritory territory)
+        private Boolean ContainsTerritory(BotBonus bonus, BotTerritory territory)
         {
             foreach (var terr in bonus.Territories)
             {
