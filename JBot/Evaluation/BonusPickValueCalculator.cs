@@ -272,6 +272,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
+            Boolean isFirstTurnBonus = GetFirstTurnBonus(bonus);
 
             if (IsExpansionWorthless(bonus))
             {
@@ -344,37 +345,66 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             // Checks bonus for inefficient and wastelanded territories
             double value = 0.0;
-            foreach (var terr in bonus.Territories)
+            if (isWastelandedTerritory(bonus))
             {
-                if (terr.Armies.NumArmies > 2)
-                {
-                    value -= 100;
-                }
-            }
-            if (bonus.Amount + 1 < bonus.Territories.Count)
-            {
-                value -= 50;
+                value -= 100;
             }
 
-            return value;
+            return isInefficientTerritory(bonus) ? value - 50 : value;
         }
 
-        private Boolean getFirstTurnBonus(BotBonus bonus)
+        private Boolean isFirstTurnBonus(BotBonus bonus)
         {
             Boolean isFirstTurnBonus = true;
+
+            if (bonus.Amount != 3 || isInefficientTerritory(bonus) || isWastelandedTerritory(bonus))
+            {
+                return false;
+            }
+
             foreach (var terr in bonus.Territories)
             {
                 foreach (var adjTerr in terr.Neighbors)
                 {
-                    if (adjTerr.Armies.NumArmies == 0)
+                    if (!containsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                     {
-                        goto CONTINUELOOP;
+                        goto BREAKLOOPS;
                     }
-                }
+                }   
                 isFirstTurnBonus = false;
-            CONTINUELOOP:;
+                
             }
+            BREAKLOOPS:
             return isFirstTurnBonus;
+        }
+
+        private Boolean isInefficientTerritory(BotBonus bonus)
+        {
+            return bonus.Territories.Count != bonus.Amount + 1;
+        }
+
+        private Boolean isWastelandedTerritory(BotBonus bonus)
+        {
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies > 2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private Boolean containsTerritory(BotBonus bonus, BotTerritory territory)
+        {
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Equals(territory))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
 
