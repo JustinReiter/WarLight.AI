@@ -353,7 +353,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return IsInefficientTerritory(bonus) ? value - 50 : value;
         }
 
-        private Boolean IsFirstTurnBonus(BotBonus bonus)
+        public Boolean IsFirstTurnBonus(BotBonus bonus)
         {
             Boolean isFirstTurnBonus = true;
 
