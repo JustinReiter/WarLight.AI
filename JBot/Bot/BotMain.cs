@@ -46,6 +46,7 @@ namespace WarLight.Shared.AI.JBot.Bot
         public ExpansionTask ExpansionTask;
         public BonusValueCalculator BonusValueCalculator;
         public BonusExpansionValueCalculator BonusExpansionValueCalculator;
+        public BonusPickValueCalculator BonusPickValueCalculator;
 
 
         public DefendTerritoryTask DefendTerritoryTask;
@@ -214,12 +215,12 @@ namespace WarLight.Shared.AI.JBot.Bot
 
         public string Name()
         {
-            return "Wunderwaffe";
+            return "JBot";
         }
 
         public string Description()
         {
-            return "Bot written for an AI competition by Norman";
+            return "Bot written originally for an AI competition by Norman and modified by Justin and Joi";
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
