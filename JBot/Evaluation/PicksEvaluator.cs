@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using WarLight.Shared.AI.JBot.Bot;
+using WarLight.Shared.AI.JBot.GameObjects;
 
 namespace WarLight.Shared.AI.JBot.Evaluation
 {
@@ -45,10 +47,14 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
-            int numberOfFTBs = 0;
+            ArrayList firstTurnBonusList = new ArrayList();
             foreach (KeyValuePair<TerritoryIDType, double> bonus in weights)
             {
-                numberOfFTBs += BotState.BonusPickValueCalculator.IsFirstTurnBonus(map.Territories[bonus.Key].Bonuses[0]) ? 1 : 0;
+                if (BotState.BonusPickValueCalculator.IsFirstTurnBonus(map.Territories[bonus.Key].Bonuses[0]))
+                {
+                    ComboBonuses newCombo = new ComboBonuses(map.Territories[bonus.Key].Bonuses[0], map);
+                    firstTurnBonusList.Add(newCombo);
+                }
             }
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
@@ -56,6 +62,5 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             return picks;
         }
-
     }
 }

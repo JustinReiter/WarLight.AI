@@ -89,6 +89,7 @@
     <Compile Include="Cowzow\Move\BotOrderAttackTransfer.cs" />
     <Compile Include="Cowzow\Move\BotOrderDeploy.cs" />
     <Compile Include="JBot\Evaluation\BonusPickValueCalculator.cs" />
+    <Compile Include="JBot\GameObjects\ComboBonuses.cs" />
     <Compile Include="Prod\BonusPath.cs" />
     <Compile Include="Prod\BotMain.cs" />
     <Compile Include="Prod\MakeOrders\DefendAttack.cs" />
