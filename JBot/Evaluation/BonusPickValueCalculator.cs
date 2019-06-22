@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using WarLight.Shared.AI.JBot.Bot;
@@ -355,26 +356,60 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         public Boolean IsFirstTurnBonus(BotBonus bonus)
         {
-            Boolean isFirstTurnBonus = true;
+            Boolean isFirstTurnBonus = false;
 
             if (bonus.Amount != 3 || IsInefficientTerritory(bonus) || IsWastelandedTerritory(bonus))
             {
-                return false;
+                return isFirstTurnBonus;
             }
 
+            IDictionary<TerritoryIDType, int> pickTerritories = new Dictionary<TerritoryIDType, int>();
             foreach (var terr in bonus.Territories)
             {
-                foreach (var adjTerr in terr.Neighbors)
+                if (terr.Armies.NumArmies != 0)
                 {
-                    if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                    continue;
+                }
+
+                if (terr.Neighbors.Count == 3)
+                {
+                    foreach (var adjTerr in terr.Neighbors)
                     {
-                        goto BREAKLOOPS;
+
+                        if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                        {
+                            isFirstTurnBonus = true;
+                        }
+                        pickTerritories[adjTerr.ID]++;
                     }
-                }   
-                isFirstTurnBonus = false;
-                
+
+                } else
+                {
+                    ArrayList coveredTerritories = new ArrayList();
+
+                    foreach (var adjTerr in terr.Neighbors)
+                    {
+                        coveredTerritories.Add(adjTerr);
+                    }
+
+                    foreach (var bonusTerr in bonus.Territories)
+                    {
+                        if (!coveredTerritories.Contains(bonusTerr))
+                        {
+                            foreach (var adjTerr in bonusTerr.Neighbors)
+                            {
+                                if (adjTerr.Armies.NumArmies == 0)
+                                {
+                                    goto CONTINUELOOP;
+                                }
+                            }
+                            return isFirstTurnBonus;
+                        }
+                    CONTINUELOOP:;
+                    }
+                    isFirstTurnBonus = true;
+                } 
             }
-            BREAKLOOPS:
             return isFirstTurnBonus;
         }
 

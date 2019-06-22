@@ -20,20 +20,20 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         public ComboBonuses(BotBonus mainBonus, BotMap map)
         {
             this.mainBonus = mainBonus;
-            adjacentPickTerritories.Add(mainBonus);
-            populateAdjacentPickList(map);
-            isFTB = mainBonus.Amount == 3 ? true : false;
+            adjacentPickTerritories.Add(GetMainBonusPick(mainBonus));
+            PopulateAdjacentPickList(map);
+            isFTB = IsFirstTurnBonus(mainBonus);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
 
         }
 
-        private void populateAdjacentPickList(BotMap map)
+        private void PopulateAdjacentPickList(BotMap map)
         {
             foreach (var terr in mainBonus.Territories)
             {
                 foreach (var adjTerr in terr.Neighbors)
                 {
-                    if (!containsTerritory(mainBonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                    if (!ContainsTerritory(mainBonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                     {
                         adjacentPickTerritories.Add(adjTerr.Bonuses[0]);
                     }
@@ -41,16 +41,106 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             }
         }
 
+        private BotTerritory GetMainBonusPick(BotBonus bonus)
+        {
+            BotTerritory territory = null;
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies == 0)
+                {
+                    territory = terr;
+                }
+            }
+            return territory;
+        }
+
         private Boolean getCounterable()
         {
             return adjacentPickTerritories.Count > 2 ? true : false;
         }
 
-        private Boolean containsTerritory(BotBonus bonus, BotTerritory territory)
+        private Boolean ContainsTerritory(BotBonus bonus, BotTerritory territory)
         {
             foreach (var terr in bonus.Territories)
             {
                 if (terr.Equals(territory))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public Boolean IsFirstTurnBonus(BotBonus bonus)
+        {
+            Boolean isFirstTurnBonus = false;
+
+            if (bonus.Amount != 3 || IsInefficientTerritory(bonus) || IsWastelandedTerritory(bonus))
+            {
+                return isFirstTurnBonus;
+            }
+
+            IDictionary<TerritoryIDType, int> pickTerritories = new Dictionary<TerritoryIDType, int>();
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies != 0)
+                {
+                    continue;
+                }
+
+                if (terr.Neighbors.Count == 3)
+                {
+                    foreach (var adjTerr in terr.Neighbors)
+                    {
+
+                        if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                        {
+                            isFirstTurnBonus = true;
+                        }
+                        pickTerritories[adjTerr.ID]++;
+                    }
+
+                }
+                else
+                {
+                    ArrayList coveredTerritories = new ArrayList();
+
+                    foreach (var adjTerr in terr.Neighbors)
+                    {
+                        coveredTerritories.Add(adjTerr);
+                    }
+
+                    foreach (var bonusTerr in bonus.Territories)
+                    {
+                        if (!coveredTerritories.Contains(bonusTerr))
+                        {
+                            foreach (var adjTerr in bonusTerr.Neighbors)
+                            {
+                                if (adjTerr.Armies.NumArmies == 0)
+                                {
+                                    goto CONTINUELOOP;
+                                }
+                            }
+                            return isFirstTurnBonus;
+                        }
+                    CONTINUELOOP:;
+                    }
+                    isFirstTurnBonus = true;
+                }
+            }
+            return isFirstTurnBonus;
+        }
+
+        private Boolean IsInefficientTerritory(BotBonus bonus)
+        {
+            return bonus.Territories.Count != bonus.Amount + 1;
+        }
+
+        private Boolean IsWastelandedTerritory(BotBonus bonus)
+        {
+            foreach (var terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies > 2)
                 {
                     return true;
                 }
