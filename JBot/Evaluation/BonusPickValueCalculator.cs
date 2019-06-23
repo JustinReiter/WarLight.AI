@@ -280,7 +280,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 return expansionValue;
             }
 
-
+            if (bonus.Details.Name.Equals("Caucasus") || bonus.Details.Name.Equals("West China"))
+            {
+                expansionValue -= 50;
+            }
 
             expansionValue = GetIncomeCostsRatio(bonus);
 
@@ -456,7 +459,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return outvar;
         }
 
+        private Boolean IsThreeTurnBonus(BotBonus bonus)
+        {
+            // Implement Dijkstra's algorithm
 
+
+            return true;
+        }
 
 
 
