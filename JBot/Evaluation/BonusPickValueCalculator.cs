@@ -349,19 +349,19 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             // Checks bonus for inefficient and wastelanded territories
             double value = 0.0;
-            if (IsWastelandedTerritory(bonus))
+            if (IsWastelandedBonus(bonus))
             {
                 value -= 100;
             }
 
-            return IsInefficientTerritory(bonus) ? value - 50 : value;
+            return IsInefficientBonus(bonus) ? value - 50 : value;
         }
 
         public Boolean IsFirstTurnBonus(BotBonus bonus)
         {
             Boolean isFirstTurnBonus = false;
 
-            if (bonus.Amount != 3 || IsInefficientTerritory(bonus) || IsWastelandedTerritory(bonus))
+            if (bonus.Amount != 3 || IsInefficientBonus(bonus) || IsWastelandedBonus(bonus))
             {
                 return isFirstTurnBonus;
             }
@@ -416,12 +416,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return isFirstTurnBonus;
         }
 
-        private Boolean IsInefficientTerritory(BotBonus bonus)
+        private Boolean IsInefficientBonus(BotBonus bonus)
         {
             return bonus.Territories.Count != bonus.Amount + 1;
         }
 
-        private Boolean IsWastelandedTerritory(BotBonus bonus)
+        private Boolean IsWastelandedBonus(BotBonus bonus)
         {
             foreach (var terr in bonus.Territories)
             {
