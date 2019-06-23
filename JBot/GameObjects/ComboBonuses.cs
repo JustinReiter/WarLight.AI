@@ -22,10 +22,30 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             this.mainBonus = mainBonus;
             adjacentPickTerritories.Add(GetMainBonusPick(mainBonus));
             PopulateAdjacentPickList(map);
+            ReorderEfficientPicks();
             isFTB = IsFirstTurnBonus(mainBonus);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
-            isEfficient = !IsInefficientTerritory(mainBonus) && IsEfficientCombo();
+            isEfficient = !IsInefficientBonus(mainBonus) && IsEfficientCombo();
+        }
 
+        private void ReorderEfficientPicks()
+        {
+            int pointer = 1;
+
+            while (pointer < adjacentPickTerritories.Count)
+            {
+                if (IsInefficientBonus(((BotTerritory) adjacentPickTerritories[pointer]).Bonuses[0]))
+                {
+                    Swap(pointer);
+                }
+            }
+        }
+
+        private void Swap(int pointer)
+        {
+            BotTerritory terr = (BotTerritory) adjacentPickTerritories[pointer];
+            adjacentPickTerritories.Remove(terr);
+            adjacentPickTerritories.Add(terr);
         }
 
         private void PopulateAdjacentPickList(BotMap map)
@@ -76,7 +96,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         {
             Boolean isFirstTurnBonus = false;
 
-            if (bonus.Amount != 3 || IsInefficientTerritory(bonus) || IsWastelandedTerritory(bonus))
+            if (bonus.Amount != 3 || IsInefficientBonus(bonus) || IsWastelandedBonus(bonus))
             {
                 return isFirstTurnBonus;
             }
@@ -140,12 +160,12 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             return isFirstTurnBonus;
         }
 
-        private Boolean IsInefficientTerritory(BotBonus bonus)
+        private Boolean IsInefficientBonus(BotBonus bonus)
         {
             return bonus.Territories.Count != bonus.Amount + 1;
         }
 
-        private Boolean IsWastelandedTerritory(BotBonus bonus)
+        private Boolean IsWastelandedBonus(BotBonus bonus)
         {
             foreach (var terr in bonus.Territories)
             {
@@ -167,7 +187,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             bool externalPickEfficient = false;
             foreach (KeyValuePair<BotBonus, bool> val in bonuses)
             {
-                externalPickEfficient = !IsInefficientTerritory(val.Key) ? true : externalPickEfficient;
+                externalPickEfficient = !IsInefficientBonus(val.Key) ? true : externalPickEfficient;
             }
             return externalPickEfficient;
         }
