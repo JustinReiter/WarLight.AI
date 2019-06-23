@@ -37,6 +37,9 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 if (IsInefficientBonus(((BotTerritory) adjacentPickTerritories[pointer]).Bonuses[0]))
                 {
                     Swap(pointer);
+                } else
+                {
+                    pointer++;
                 }
             }
         }
@@ -109,7 +112,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                     continue;
                 }
 
-                if (terr.Neighbors.Count == 3)
+                if (NumberOfBonusTerrNeighbours(terr) == 3)
                 {
                     foreach (var adjBonusTerr in terr.Neighbors)
                     {
@@ -158,6 +161,19 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 }
             }
             return isFirstTurnBonus;
+        }
+
+        private int NumberOfBonusTerrNeighbours(BotTerritory terr)
+        {
+            int value = 0;
+            foreach (var adjTerr in terr.Neighbors)
+            {
+                if (ContainsTerritory(terr.Bonuses[0], adjTerr))
+                {
+                    value++;
+                }
+            }
+            return value;
         }
 
         private Boolean IsInefficientBonus(BotBonus bonus)

@@ -374,16 +374,24 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     continue;
                 }
 
-                if (terr.Neighbors.Count == 3)
+                if (NumberOfBonusTerrNeighbours(terr) == 3)
                 {
-                    foreach (var adjTerr in terr.Neighbors)
+                    foreach (var adjBonusTerr in terr.Neighbors)
                     {
 
-                        if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                        if (ContainsTerritory(bonus, adjBonusTerr))
                         {
+                            foreach (var adjTerr in adjBonusTerr.Neighbors)
+                            {
+                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                                {
+                                    isFirstTurnBonus = true;
+                                    pickTerritories[adjTerr.ID]++;
+                                }
+                            }
+
                             isFirstTurnBonus = true;
                         }
-                        pickTerritories[adjTerr.ID]++;
                     }
 
                 } else
@@ -414,6 +422,19 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 } 
             }
             return isFirstTurnBonus;
+        }
+
+        private int NumberOfBonusTerrNeighbours(BotTerritory terr)
+        {
+            int value = 0;
+            foreach (var adjTerr in terr.Neighbors)
+            {
+                if (ContainsTerritory(terr.Bonuses[0], adjTerr))
+                {
+                    value++;
+                }
+            }
+            return value;
         }
 
         private Boolean IsInefficientBonus(BotBonus bonus)
