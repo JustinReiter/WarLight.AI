@@ -389,8 +389,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                                     pickTerritories[adjTerr.ID]++;
                                 }
                             }
-
-                            isFirstTurnBonus = true;
                         }
                     }
 

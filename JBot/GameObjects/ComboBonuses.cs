@@ -11,7 +11,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
     class ComboBonuses
     {
-        public ArrayList adjacentPickTerritories = new ArrayList();
+        public List<BotTerritory> adjacentPickTerritories = new List<BotTerritory>();
         public BotBonus mainBonus;
         public Boolean isCounterable;
         public Boolean isFTB;
@@ -32,21 +32,22 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         {
             int pointer = 1;
 
+            IDictionary<BotTerritory, bool> iterated = new Dictionary<BotTerritory, bool>();
             while (pointer < adjacentPickTerritories.Count)
             {
-                if (IsInefficientBonus(((BotTerritory) adjacentPickTerritories[pointer]).Bonuses[0]))
-                {
-                    Swap(pointer);
-                } else
+                if (iterated.ContainsKey(adjacentPickTerritories[pointer]) || !IsInefficientBonus(adjacentPickTerritories[pointer].Bonuses[0]))
                 {
                     pointer++;
+                } else
+                {
+                    Swap(pointer);
                 }
             }
         }
 
         private void Swap(int pointer)
         {
-            BotTerritory terr = (BotTerritory) adjacentPickTerritories[pointer];
+            BotTerritory terr = adjacentPickTerritories[pointer];
             adjacentPickTerritories.Remove(terr);
             adjacentPickTerritories.Add(terr);
         }
@@ -127,20 +128,13 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                                     pickTerritories[adjTerr.ID]++;
                                 }
                             }
-
-                            isFirstTurnBonus = true;
                         }
                     }
 
                 }
                 else
                 {
-                    ArrayList coveredTerritories = new ArrayList();
-
-                    foreach (var adjTerr in terr.Neighbors)
-                    {
-                        coveredTerritories.Add(adjTerr);
-                    }
+                    ArrayList coveredTerritories = new ArrayList(terr.Neighbors);
 
                     foreach (var bonusTerr in bonus.Territories)
                     {

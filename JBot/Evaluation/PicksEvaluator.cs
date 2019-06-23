@@ -47,7 +47,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
-            ArrayList firstTurnBonusList = new ArrayList();
+            List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
             foreach (KeyValuePair<TerritoryIDType, double> bonus in weights)
             {
                 if (BotState.BonusPickValueCalculator.IsFirstTurnBonus(map.Territories[bonus.Key].Bonuses[0]))
@@ -56,11 +56,32 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     firstTurnBonusList.Add(newCombo);
                 }
             }
+            ReorderFirstTurnComboPicks(ref firstTurnBonusList);
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;
 
             return picks;
+        }
+
+
+        private void ReorderFirstTurnComboPicks(ref List<ComboBonuses> list)
+        {
+            IDictionary<ComboBonuses, bool> iterated = new Dictionary<ComboBonuses, bool>;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (iterated.ContainsKey(list[i]))
+                {
+                    continue;
+                }
+                if (list[i].adjacentPickTerritories.Count > 2)
+                {
+                    ComboBonuses temp = list[i];
+                    list.Remove(temp);
+                    list.Add(temp);
+                    i--;
+                }
+            }
         }
     }
 }
