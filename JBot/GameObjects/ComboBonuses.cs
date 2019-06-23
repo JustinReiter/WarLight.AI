@@ -24,6 +24,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             PopulateAdjacentPickList(map);
             isFTB = IsFirstTurnBonus(mainBonus);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
+            isEfficient = !IsInefficientTerritory(mainBonus) && IsEfficientCombo();
 
         }
 
@@ -90,14 +91,22 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
                 if (terr.Neighbors.Count == 3)
                 {
-                    foreach (var adjTerr in terr.Neighbors)
+                    foreach (var adjBonusTerr in terr.Neighbors)
                     {
 
-                        if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                        if (ContainsTerritory(bonus, adjBonusTerr))
                         {
+                            foreach (var adjTerr in adjBonusTerr.Neighbors)
+                            {
+                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                                {
+                                    isFirstTurnBonus = true;
+                                    pickTerritories[adjTerr.ID]++;
+                                }
+                            }
+
                             isFirstTurnBonus = true;
                         }
-                        pickTerritories[adjTerr.ID]++;
                     }
 
                 }
@@ -146,6 +155,21 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 }
             }
             return false;
+        }
+
+        private Boolean IsEfficientCombo()
+        {
+            IDictionary<BotBonus, bool> bonuses = new Dictionary<BotBonus, bool>();
+            foreach (BotTerritory picks in adjacentPickTerritories)
+            {
+                bonuses[picks.Bonuses[0]] = true;
+            }
+            bool externalPickEfficient = false;
+            foreach (KeyValuePair<BotBonus, bool> val in bonuses)
+            {
+                externalPickEfficient = !IsInefficientTerritory(val.Key) ? true : externalPickEfficient;
+            }
+            return externalPickEfficient;
         }
     }
 }
