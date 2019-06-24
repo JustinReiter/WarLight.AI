@@ -28,7 +28,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             var pickableTerritories = BotState.DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => o.ID).ToList();
 
-            //var ftb;
             var map = BotMap.FromStanding(BotState, BotState.DistributionStanding);
             var weights = pickableTerritories.ToDictionary(o => o, terrID =>
             {
@@ -47,6 +46,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
+            // Check for FTBs
             List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
             foreach (KeyValuePair<TerritoryIDType, double> bonus in weights)
             {
@@ -57,6 +57,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             }
             ReorderFirstTurnComboPicks(ref firstTurnBonusList);
+
+            // Check for combos
+
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;

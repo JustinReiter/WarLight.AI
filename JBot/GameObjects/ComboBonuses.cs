@@ -60,7 +60,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 {
                     if (!ContainsTerritory(mainBonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                     {
-                        adjacentPickTerritories.Add(adjTerr.Bonuses[0]);
+                        adjacentPickTerritories.Add(adjTerr);
                     }
                 }
             }

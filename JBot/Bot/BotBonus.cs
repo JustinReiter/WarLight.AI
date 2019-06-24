@@ -54,7 +54,7 @@ namespace WarLight.Shared.AI.JBot.Bot
 
         public void SetMyExpansionValueHeuristic()
         {
-            this.ExpansionValue = BotState.BonusExpansionValueCalculator.GetExpansionValue(this, true);
+            this.ExpansionValue = BotState.BonusPickValueCalculator.GetExpansionValue(this, true);
 
         }
 
