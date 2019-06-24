@@ -59,7 +59,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             ReorderFirstTurnComboPicks(ref firstTurnBonusList);
 
             // Check for combos
+            foreach (KeyValuePair<TerritoryIDType, double> bonus in weights)
+            {
+                if (BotState.BonusPickValueCalculator.IsComboBonus(map.Territories[bonus.Key].Bonuses[0]))
+                {
 
+                }
+            }
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;

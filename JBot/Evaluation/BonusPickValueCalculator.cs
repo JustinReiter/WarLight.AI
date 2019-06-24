@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using WarLight.Shared.AI.JBot.Bot;
+using WarLight.Shared.AI.JBot.GameObjects;
 
 namespace WarLight.Shared.AI.JBot.Evaluation
 {
@@ -478,12 +479,56 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return outvar;
         }
 
-        private Boolean IsThreeTurnBonus(BotBonus bonus)
+        public bool IsComboBonus(BotBonus bonus)
         {
-            // Implement Dijkstra's algorithm
-
 
             return true;
+        }
+
+        private Boolean IsManyTurnBonus(BotBonus bonus, ComboBonuses optionalCombo = null)
+        {
+            if (optionalCombo == null)
+            {
+                IDictionary<BotTerritory, bool> seenTerritories = new Dictionary<BotTerritory, bool>();
+                BotTerritory pick = null;
+                foreach (BotTerritory terr in bonus.Territories)
+                {
+                    if (terr.Armies.NumArmies == 0)
+                    {
+                        seenTerritories[terr] = true;
+                        pick = terr;
+                    }
+                }
+
+                if (pick == null)
+                {
+                    return true;
+                }
+
+                foreach (BotTerritory adjTerr in pick.Neighbors)
+                {
+                    if (!ContainsTerritory(bonus, adjTerr))
+                    {
+                        continue;
+                    }
+                    seenTerritories[adjTerr] = true;
+                    foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
+                    {
+                        if (!ContainsTerritory(bonus, adjSecondTerr))
+                        {
+                            continue;
+                        }
+                        seenTerritories[adjSecondTerr] = true;
+                    }
+                }
+
+                if (seenTerritories.Count != bonus.Territories.Count)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
