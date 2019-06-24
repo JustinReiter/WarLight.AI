@@ -487,51 +487,87 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         private Boolean IsManyTurnBonus(BotBonus bonus, ComboBonuses optionalCombo = null)
         {
-            if (optionalCombo == null)
+            IDictionary<BotTerritory, bool> seenTerritories = new Dictionary<BotTerritory, bool>();
+            BotTerritory pick = null;
+            foreach (BotTerritory terr in bonus.Territories)
             {
-                IDictionary<BotTerritory, bool> seenTerritories = new Dictionary<BotTerritory, bool>();
-                BotTerritory pick = null;
-                foreach (BotTerritory terr in bonus.Territories)
+                if (terr.Armies.NumArmies == 0)
                 {
-                    if (terr.Armies.NumArmies == 0)
-                    {
-                        seenTerritories[terr] = true;
-                        pick = terr;
-                    }
-                }
-
-                if (pick == null)
-                {
-                    return true;
-                }
-
-                foreach (BotTerritory adjTerr in pick.Neighbors)
-                {
-                    if (!ContainsTerritory(bonus, adjTerr))
-                    {
-                        continue;
-                    }
-                    seenTerritories[adjTerr] = true;
-                    foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
-                    {
-                        if (!ContainsTerritory(bonus, adjSecondTerr))
-                        {
-                            continue;
-                        }
-                        seenTerritories[adjSecondTerr] = true;
-                    }
-                }
-
-                if (seenTerritories.Count != bonus.Territories.Count)
-                {
-                    return true;
+                    seenTerritories[terr] = true;
+                    pick = terr;
                 }
             }
 
-            return false;
+            if (pick == null)
+            {
+                return true;
+            }
+
+            foreach (BotTerritory adjTerr in pick.Neighbors)
+            {
+                if (!ContainsTerritory(bonus, adjTerr))
+                {
+                    continue;
+                }
+                seenTerritories[adjTerr] = true;
+                foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
+                {
+                    if (!ContainsTerritory(bonus, adjSecondTerr))
+                    {
+                        continue;
+                    }
+                    seenTerritories[adjSecondTerr] = true;
+                }
+            }
+
+            if (seenTerritories.Count == bonus.Territories.Count)
+            {
+                return false;
+            } else if (optionalCombo != null)
+            {
+                List<BotTerritory> unseenTerritories = Except(bonus, seenTerritories.Keys.ToList<BotTerritory>());
+                foreach (BotTerritory terr in optionalCombo.adjacentPickTerritories)
+                {
+                    if (terr.Bonuses[0] == bonus)
+                    {
+                        continue;
+                    }
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (unseenTerritories.Contains(adjTerr))
+                        {
+                            unseenTerritories.Remove(adjTerr);
+                            if (unseenTerritories.Count == 0)
+                            {
+                                return false;
+                            }
+                        }
+                        foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
+                        {
+                            if (unseenTerritories.Contains(adjSecondTerr))
+                            {
+                                unseenTerritories.Remove(adjSecondTerr);
+                                if (unseenTerritories.Count == 0)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
-
+        private List<BotTerritory> Except (BotBonus bonus, List<BotTerritory> seenTerritories)
+        {
+            List<BotTerritory> UnseenTerritories = new List<BotTerritory>(bonus.Territories);
+            foreach (BotTerritory terr in seenTerritories)
+            {
+                UnseenTerritories.Remove(terr);
+            }
+            return UnseenTerritories;
+        }
 
 
 
