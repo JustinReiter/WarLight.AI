@@ -56,7 +56,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     firstTurnBonusList.Add(newCombo);
                 }
             }
-            ReorderFirstTurnComboPicks(ref firstTurnBonusList);
 
             // Check for combos
             foreach (KeyValuePair<TerritoryIDType, double> bonus in weights)
@@ -71,26 +70,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             //StatefulFogRemover.PickedTerritories = picks;
 
             return picks;
-        }
-
-
-        private void ReorderFirstTurnComboPicks(ref List<ComboBonuses> list)
-        {
-            IDictionary<ComboBonuses, bool> iterated = new Dictionary<ComboBonuses, bool>;
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (iterated.ContainsKey(list[i]))
-                {
-                    continue;
-                }
-                if (list[i].adjacentPickTerritories.Count > 2)
-                {
-                    ComboBonuses temp = list[i];
-                    list.Remove(temp);
-                    list.Add(temp);
-                    i--;
-                }
-            }
         }
     }
 }

@@ -7,17 +7,18 @@ using WarLight.Shared.AI.JBot.GameObjects;
 
 namespace WarLight.Shared.AI.JBot.Evaluation
 {
-    /// <summary>This class is responsible for finding out which Bonuses to expand into.
+    /// <summary>
+    /// This class is responsible for finding out which picks to choose based on an algorithm dominantly focusing on FTBs and combos.
     /// </summary>
     /// <remarks>
-    /// This class is responsible for finding out which Bonuses to expand into. This happens by giving all Bonuses
+    /// This class is responsible for finding out which picks to choose. This happens by giving all Bonuses
     /// values. Furthermore this class is used during picking stage.
     /// </remarks>
     public class BonusPickValueCalculator
     {
-        private double TerritoryMultiplicator = 0.9;
-        private double NeutralKillsMultiplicator = 1.0;
-        private double NeutralsMultiplicator = 0.5;
+        private readonly double TerritoryMultiplicator = 0.9;
+        private readonly double NeutralKillsMultiplicator = 1.0;
+        private readonly double NeutralsMultiplicator = 0.5;
 
         public BotMain BotState;
 
@@ -26,75 +27,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         public BonusPickValueCalculator(BotMain state)
         {
             this.BotState = state;
-
-        }
-
-        public List<BotBonus> SortBonuses(BotMap mapToUse, PlayerIDType playerID)
-        {
-            var allBonuses = mapToUse.Bonuses.Values.ToList();
-            var sortedBonuses = new List<BotBonus>();
-            while (allBonuses.Count != 0)
-            {
-                var bestBonus = allBonuses[0];
-                double bestValue = 0;
-                if (playerID == BotState.Me.ID)
-                    bestValue = bestBonus.ExpansionValue;
-                else
-                {
-                    bestValue = -1;
-                }
-                foreach (BotBonus bonus in allBonuses)
-                {
-                    double value = 0;
-                    if (playerID == BotState.Me.ID)
-                        value = bonus.ExpansionValue;
-                    else
-                        value = -1;
-
-                    if (value > bestValue)
-                    {
-                        bestBonus = bonus;
-                        bestValue = value;
-                    }
-                }
-                allBonuses.Remove(bestBonus);
-                sortedBonuses.Add(bestBonus);
-            }
-            return sortedBonuses;
-        }
-
-        public List<BotBonus> SortAccessibleBonuses(BotMap mapToUse)
-        {
-            var copy = new List<BotBonus>();
-            copy.AddRange(mapToUse.Bonuses.Values);
-            List<BotBonus> outvar = new List<BotBonus>();
-            while (copy.Count != 0)
-            {
-                var highestPrioBonus = copy[0];
-                foreach (BotBonus bonus in copy)
-                {
-                    if (bonus.GetExpansionValue() > highestPrioBonus.GetExpansionValue())
-                        highestPrioBonus = bonus;
-                }
-                copy.Remove(highestPrioBonus);
-                outvar.Add(highestPrioBonus);
-            }
-            // Remove the non accessible Bonuses
-            List<BotBonus> nonAccessibleBonuses = new List<BotBonus>();
-            foreach (BotBonus bonus_1 in mapToUse.Bonuses.Values)
-            {
-                if (bonus_1.GetOwnedTerritoriesAndNeighbors().Count == 0)
-                    nonAccessibleBonuses.Add(bonus_1);
-            }
-            //outvar.RemoveAll(nonAccessibleBonuses);
-            outvar.RemoveAll(i => nonAccessibleBonuses.Contains(i));
-
-            return outvar;
-        }
-
-        public void AddExtraValueForFirstTurnBonus(BotBonus bonus)
-        {
-            bonus.ExpansionValue += bonus.ExpansionValue * 0.5;
         }
 
         /// <summary>Classifies the Bonus according to the intel from the temporaryMap.

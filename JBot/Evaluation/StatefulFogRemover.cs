@@ -1,9 +1,9 @@
 ﻿//using System.Collections.Generic;
 //using System.Linq;
-//using WarLight.AI.Wunderwaffe.Bot;
+//using WarLight.AI.JBot.Bot;
 //using WarLight.Shared.AI;
 
-//namespace WarLight.AI.Wunderwaffe.Evaluation
+//namespace WarLight.AI.JBot.Evaluation
 //{
 //    public class StatefulFogRemover
 //    {
