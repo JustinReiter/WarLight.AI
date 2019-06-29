@@ -42,6 +42,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                     pointer++;
                 } else
                 {
+                    iterated.Add(adjacentPickTerritories[pointer], true);
                     Swap(pointer);
                 }
             }
@@ -127,6 +128,11 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                                 if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                                 {
                                     isFirstTurnBonus = true;
+
+                                    if (!pickTerritories.ContainsKey(adjTerr.ID))
+                                    {
+                                        pickTerritories.Add(adjTerr.ID, 0);
+                                    }
                                     pickTerritories[adjTerr.ID]++;
                                 }
                             }

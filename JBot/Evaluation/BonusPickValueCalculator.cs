@@ -207,6 +207,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
             Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);
+            AILog.Log("Debug", bonus.Details.Name + "+++++++++++++++" + isFirstTurnBonus);
 
             if (IsExpansionWorthless(bonus))
             {
@@ -216,6 +217,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             if (bonus.Details.Name.Equals("Caucasus") || bonus.Details.Name.Equals("West China"))
             {
                 expansionValue -= 50;
+            }
+
+            if (IsManyTurnBonus(bonus))
+            {
+                expansionValue -= 15;
             }
 
             //expansionValue = GetIncomeCostsRatio(bonus);
@@ -253,7 +259,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             //completeFactor = Math.Min(completeFactor, 0.8);
 
             //expansionValue = expansionValue - (expansionValue * completeFactor);
-
+            AILog.Log("Debug", "SCORE: " + expansionValue);
             return expansionValue;
         }
 
@@ -319,6 +325,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                                 if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                                 {
                                     isFirstTurnBonus = true;
+                                    if (!pickTerritories.ContainsKey(adjTerr.ID))
+                                    {
+                                        pickTerritories.Add(adjTerr.ID, 0);
+                                    }
                                     pickTerritories[adjTerr.ID]++;
                                 }
                             }
@@ -331,12 +341,15 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                     foreach (var adjTerr in terr.Neighbors)
                     {
-                        coveredTerritories.Add(adjTerr);
+                        if (ContainsTerritory(bonus, adjTerr))
+                        {
+                            coveredTerritories.Add(adjTerr);
+                        }
                     }
 
                     foreach (var bonusTerr in bonus.Territories)
                     {
-                        if (!coveredTerritories.Contains(bonusTerr))
+                        if (!coveredTerritories.Contains(bonusTerr) && bonusTerr.Armies.NumArmies != 0)
                         {
                             foreach (var adjTerr in bonusTerr.Neighbors)
                             {
