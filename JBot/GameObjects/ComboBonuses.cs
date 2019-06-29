@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WarLight.Shared.AI.JBot.Bot;
+using WarLight.Shared.AI.JBot.Evaluation;
 
 namespace WarLight.Shared.AI.JBot.GameObjects
 {
@@ -13,15 +14,18 @@ namespace WarLight.Shared.AI.JBot.GameObjects
     {
         public List<BotTerritory> adjacentPickTerritories = new List<BotTerritory>();
         public BotBonus mainBonus;
+        public BotTerritory mainPick;
         public Boolean isCombo;
         public Boolean isCounterable;
         public Boolean isFTB;
+        public List<BotTerritory> supportPickFTB = new List<BotTerritory>();
         public Boolean isEfficient;
 
         public ComboBonuses(BotBonus mainBonus, BotMap map)
         {
             this.mainBonus = mainBonus;
-            adjacentPickTerritories.Add(GetMainBonusPick(mainBonus));
+            mainPick = GetMainBonusPick(mainBonus);
+            adjacentPickTerritories.Add(mainPick);
             PopulateAdjacentPickList(map);
             ReorderEfficientPicks();
             isFTB = IsFirstTurnBonus(mainBonus);
@@ -37,7 +41,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             IDictionary<BotTerritory, bool> iterated = new Dictionary<BotTerritory, bool>();
             while (pointer < adjacentPickTerritories.Count)
             {
-                if (iterated.ContainsKey(adjacentPickTerritories[pointer]) || !IsInefficientBonus(adjacentPickTerritories[pointer].Bonuses[0]))
+                if (iterated.ContainsKey(adjacentPickTerritories[pointer]) || (!IsInefficientBonus(adjacentPickTerritories[pointer].Bonuses[0]) && !IsWastelandedBonus(adjacentPickTerritories[pointer].Bonuses[0])))
                 {
                     pointer++;
                 } else
@@ -101,76 +105,74 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
         public Boolean IsFirstTurnBonus(BotBonus bonus)
         {
-            Boolean isFirstTurnBonus = false;
-
             if (bonus.Amount != 3 || IsInefficientBonus(bonus) || IsWastelandedBonus(bonus))
             {
-                return isFirstTurnBonus;
+                return false;
             }
 
-            IDictionary<TerritoryIDType, int> pickTerritories = new Dictionary<TerritoryIDType, int>();
-            foreach (var terr in bonus.Territories)
+            IDictionary<BotTerritory, int> pickTerritories = new Dictionary<BotTerritory, int>();
+            pickTerritories.Add(adjacentPickTerritories[0], NumberOfBonusTerrNeighbours(adjacentPickTerritories[0], mainBonus));
+            if (NumberOfBonusTerrNeighbours(mainPick, mainBonus) == 3)
             {
-                if (terr.Armies.NumArmies != 0)
+                foreach (var adjBonusTerr in mainPick.Neighbors)
                 {
-                    continue;
-                }
 
-                if (NumberOfBonusTerrNeighbours(terr) == 3)
-                {
-                    foreach (var adjBonusTerr in terr.Neighbors)
+                    if (ContainsTerritory(bonus, adjBonusTerr))
                     {
-
-                        if (ContainsTerritory(bonus, adjBonusTerr))
+                        foreach (var adjTerr in adjBonusTerr.Neighbors)
                         {
-                            foreach (var adjTerr in adjBonusTerr.Neighbors)
+                            if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
                             {
-                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                                if (!pickTerritories.ContainsKey(adjTerr))
                                 {
-                                    isFirstTurnBonus = true;
-
-                                    if (!pickTerritories.ContainsKey(adjTerr.ID))
-                                    {
-                                        pickTerritories.Add(adjTerr.ID, 0);
-                                    }
-                                    pickTerritories[adjTerr.ID]++;
+                                    pickTerritories.Add(adjTerr, 0);
+                                    supportPickFTB.Add(adjTerr);
                                 }
+                                pickTerritories[adjTerr]++;
                             }
                         }
                     }
-
                 }
-                else
-                {
-                    ArrayList coveredTerritories = new ArrayList(terr.Neighbors);
 
-                    foreach (var bonusTerr in bonus.Territories)
-                    {
-                        if (!coveredTerritories.Contains(bonusTerr))
-                        {
-                            foreach (var adjTerr in bonusTerr.Neighbors)
-                            {
-                                if (adjTerr.Armies.NumArmies == 0)
-                                {
-                                    goto CONTINUELOOP;
-                                }
-                            }
-                            return isFirstTurnBonus;
-                        }
-                    CONTINUELOOP:;
-                    }
-                    isFirstTurnBonus = true;
-                }
             }
-            return isFirstTurnBonus;
+            else
+            {
+                ArrayList uncoveredTerritories = new ArrayList(Except(mainBonus, mainPick.Neighbors));
+                uncoveredTerritories.Remove(mainPick);
+
+                foreach (BotTerritory terr in uncoveredTerritories)
+                {
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (adjTerr.Armies.NumArmies == 0)
+                        {
+                            if (!pickTerritories.ContainsKey(adjTerr))
+                            {
+                                pickTerritories.Add(adjTerr, 0);
+                            }
+                            pickTerritories[adjTerr]++;
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<BotTerritory, int> pair in pickTerritories)
+                {
+                    if (pair.Value == uncoveredTerritories.Count)
+                    {
+                        supportPickFTB.Add(pair.Key);
+                    }
+                }
+
+            }
+            return supportPickFTB.Count > 0;
         }
 
-        private int NumberOfBonusTerrNeighbours(BotTerritory terr)
+        private int NumberOfBonusTerrNeighbours(BotTerritory terr, BotBonus bonus)
         {
             int value = 0;
             foreach (var adjTerr in terr.Neighbors)
             {
-                if (ContainsTerritory(terr.Bonuses[0], adjTerr))
+                if (ContainsTerritory(bonus, adjTerr))
                 {
                     value++;
                 }
@@ -213,22 +215,14 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         private Boolean IsManyTurnBonus()
         {
             IDictionary<BotTerritory, bool> seenTerritories = new Dictionary<BotTerritory, bool>();
-            BotTerritory pick = null;
-            foreach (BotTerritory terr in mainBonus.Territories)
-            {
-                if (terr.Armies.NumArmies == 0)
-                {
-                    seenTerritories[terr] = true;
-                    pick = terr;
-                }
-            }
+            BotTerritory pick = mainPick;
 
-            if (pick == null)
+            if (mainPick == null)
             {
                 return true;
             }
 
-            foreach (BotTerritory adjTerr in pick.Neighbors)
+            foreach (BotTerritory adjTerr in mainPick.Neighbors)
             {
                 if (!ContainsTerritory(mainBonus, adjTerr))
                 {
@@ -254,26 +248,27 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 List<BotTerritory> unseenTerritories = Except(mainBonus, seenTerritories.Keys.ToList<BotTerritory>());
                 foreach (BotTerritory terr in adjacentPickTerritories)
                 {
+                    List<BotTerritory>unseenTerritoriesCopy = new List<BotTerritory>(unseenTerritories);
                     if (terr.Bonuses[0] == mainBonus)
                     {
                         continue;
                     }
                     foreach (BotTerritory adjTerr in terr.Neighbors)
                     {
-                        if (unseenTerritories.Contains(adjTerr))
+                        if (unseenTerritoriesCopy.Contains(adjTerr))
                         {
-                            unseenTerritories.Remove(adjTerr);
-                            if (unseenTerritories.Count == 0)
+                            unseenTerritoriesCopy.Remove(adjTerr);
+                            if (unseenTerritoriesCopy.Count == 0)
                             {
                                 return false;
                             }
                         }
                         foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
                         {
-                            if (unseenTerritories.Contains(adjSecondTerr))
+                            if (unseenTerritoriesCopy.Contains(adjSecondTerr))
                             {
-                                unseenTerritories.Remove(adjSecondTerr);
-                                if (unseenTerritories.Count == 0)
+                                unseenTerritoriesCopy.Remove(adjSecondTerr);
+                                if (unseenTerritoriesCopy.Count == 0)
                                 {
                                     return false;
                                 }
