@@ -207,7 +207,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
             Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);
-            AILog.Log("Debug", bonus.Details.Name + "+++++++++++++++" + isFirstTurnBonus);
 
             if (IsExpansionWorthless(bonus))
             {
@@ -259,7 +258,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             //completeFactor = Math.Min(completeFactor, 0.8);
 
             //expansionValue = expansionValue - (expansionValue * completeFactor);
-            AILog.Log("Debug", "SCORE: " + expansionValue);
             return expansionValue;
         }
 
@@ -381,12 +379,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return value;
         }
 
-        private Boolean IsInefficientBonus(BotBonus bonus)
+        public Boolean IsInefficientBonus(BotBonus bonus)
         {
             return bonus.Territories.Count != bonus.Amount + 1;
         }
 
-        private Boolean IsWastelandedBonus(BotBonus bonus)
+        public Boolean IsWastelandedBonus(BotBonus bonus)
         {
             foreach (var terr in bonus.Territories)
             {
