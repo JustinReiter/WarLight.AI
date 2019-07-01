@@ -239,18 +239,18 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             } else
             {
                 // Case of no FTBs and at least 1 combo
-                for (int i = combos[0].adjacentPickTerritories.Count - 1; i >= 0; i--)
-                {
-                    TerritoryIDType temp = combos[0].adjacentPickTerritories[i].ID;
-                    picks.Remove(temp);
-                    picks.Insert(0, temp);
-                }
+                TerritoryIDType temp = combos[0].adjacentPickTerritories[0].ID;
+                picks.Remove(temp);
+                picks.Insert(0, temp);
+                temp = combos[0].adjacentPickTerritories[1].ID;
+                picks.Remove(temp);
+                picks.Insert(2, temp);
 
                 if (usableCombo > 1)
                 {
-                    for (int i = combos[1].adjacentPickTerritories.Count- 1; i >= 0; i--)
+                    for (int i = 1; i >= 0; i--)
                     {
-                        TerritoryIDType temp = combos[1].adjacentPickTerritories[i].ID;
+                        temp = combos[1].adjacentPickTerritories[i].ID;
                         picks.Remove(temp);
                         picks.Insert(3, temp);
                     }
