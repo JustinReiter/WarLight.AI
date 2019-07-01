@@ -131,7 +131,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 for (int i = ftb.Count - counterableFTBCount - 1; i >= 0; i--)
                 {
-                    for (int j = ftb[i].adjacentPickTerritories.Count; j >= 0; j--)
+                    for (int j = ftb[i].adjacentPickTerritories.Count - 1; j >= 0; j--)
                     {
                         TerritoryIDType temp = ftb[i].adjacentPickTerritories[j].ID;
                         picks.Remove(temp);
@@ -234,7 +234,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         {
             if (picks.Count > 6)
             {
-                picks.RemoveRange(6, picks.Count);
+                picks.RemoveRange(6, picks.Count - 6);
             }
         }
     }
