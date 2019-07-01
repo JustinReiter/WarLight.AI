@@ -79,6 +79,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             }
 
+            ReorderCombosByNumberOfTerritories(ref firstTurnBonusList);
+            ReorderCombosByNumberOfTerritories(ref comboList);
+
 
 
             AILog.Log("\nDEBUG", "BEFORE LIST");
@@ -122,6 +125,27 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 AILog.Log("DEBUG", map.Territories[terr].Details.Name);
             }
             return picks;
+        }
+
+        private void ReorderCombosByNumberOfTerritories(ref List<ComboBonuses> list)
+        {
+            List<TerritoryIDType> seenPickIDs = new List<TerritoryIDType>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (seenPickIDs.Contains(list[i].mainPick.ID))
+                {
+                    continue;
+                } else
+                {
+                    seenPickIDs.Add(list[i].mainPick.ID);
+                    if (list[i].adjacentPickTerritories.Count < 3)
+                    {
+                        ComboBonuses temp = list[i];
+                        list.Remove(temp);
+                        list.Insert(0, temp);
+                    }
+                }
+            }
         }
 
         // Check Tree Diagram for reference of reordering
@@ -168,13 +192,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 // Case of 1/2 or 2/3 FTBs counterable
                 if (counterableFTBCount + 1 == usableFTB && usableFTB != 1)
                 {
-                    for (int i = usableFTB - counterableFTBCount; i < usableFTB; i++)
+                    for (int i = 1; i < usableFTB; i++)
                     {
                         for (int j = 2; j >= 0; j--)
                         {
                             TerritoryIDType temp = ftb[i].adjacentPickTerritories[j].ID;
                             picks.Remove(temp);
-                            picks.Insert(3 + i, temp);
+                            picks.Insert(3 + i - 1, temp);
                         }
                     }
                 }

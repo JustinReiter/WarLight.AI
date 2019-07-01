@@ -29,6 +29,9 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             adjacentPickTerritories.Add(mainPick);
             PopulateAdjacentPickList(map);
             PopulateComboSupportPicks();
+            RemoveDuplicates(ref adjacentPickTerritories);
+            RemoveDuplicates(ref supportFTBPick);
+            RemoveDuplicates(ref supportComboPick);
             isFTB = IsFirstTurnBonus(mainBonus);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
             isCombo = (isFTB || supportComboPick.Count > 1) && !IsManyTurnBonus();
