@@ -18,7 +18,8 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         public Boolean isCombo;
         public Boolean isCounterable;
         public Boolean isFTB;
-        public List<BotTerritory> supportPick = new List<BotTerritory>();
+        public List<BotTerritory> supportFTBPick = new List<BotTerritory>();
+        public List<BotTerritory> supportComboPick = new List<BotTerritory>();
         public Boolean isEfficient;
 
         public ComboBonuses(BotBonus mainBonus, BotMap map)
@@ -38,16 +39,29 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         {
 
 
-            int pointer = supportPick.Count + 1;
+            int pointer = supportFTBPick.Count + 1;
 
             BotTerritory[] picks = new BotTerritory[adjacentPickTerritories.Count - 1];
             Array.Copy(adjacentPickTerritories.ToArray(), 1, picks, 0, picks.Length);
 
-            if (supportPick.Count != 0)
+
+            if (isFTB)
             {
-                for (int i = 0; i < supportPick.Count; i++)
+                if (supportFTBPick.Count != 0)
                 {
-                    picks[i] = supportPick[i];
+                    for (int i = 0; i < supportFTBPick.Count; i++)
+                    {
+                        picks[i] = supportFTBPick[i];
+                    }
+                }
+            } else if (isCombo)
+            {
+                if (supportComboPick.Count != 0)
+                {
+                    for (int i = 0; i < supportComboPick.Count; i++)
+                    {
+                        picks[i] = supportComboPick[i];
+                    }
                 }
             }
 
@@ -63,29 +77,6 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             }
 
             adjacentPickTerritories = list;
-
-            //List<BotTerritory> adjacentPickTerritoriesCopy = new List<BotTerritory>(picks);
-            //adjacentPickTerritoriesCopy.Insert(0, mainPick);
-
-
-            //IDictionary<BotTerritory, bool> iterated = new Dictionary<BotTerritory, bool>();
-            //while (pointer < adjacentPickTerritories.Count)
-            //{
-            //    if (adjacentPickTerritoriesCopy.Contains(adjacentPickTerritories[pointer]))
-            //    {
-            //        continue;
-            //    }
-            //    else if (iterated.ContainsKey(adjacentPickTerritories[pointer]) || (!IsInefficientBonus(adjacentPickTerritories[pointer].Bonuses[0]) && !IsWastelandedBonus(adjacentPickTerritories[pointer].Bonuses[0])))
-            //    {
-            //        pointer++;
-            //    }
-            //    else
-            //    {
-            //        adjacentPickTerritoriesCopy.Add(adjacentPickTerritories[pointer]);
-            //        iterated.Add(adjacentPickTerritories[pointer], true);
-            //        Swap(pointer, adjacentPickTerritoriesCopy);
-            //    }
-            //}
         }
 
         private void Swap(int pointer, List<BotTerritory> list)
@@ -162,7 +153,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                                 if (!pickTerritories.ContainsKey(adjTerr))
                                 {
                                     pickTerritories.Add(adjTerr, 0);
-                                    supportPick.Add(adjTerr);
+                                    supportFTBPick.Add(adjTerr);
                                 }
                                 pickTerritories[adjTerr]++;
                             }
@@ -195,12 +186,12 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 {
                     if (pair.Value == uncoveredTerritories.Count)
                     {
-                        supportPick.Add(pair.Key);
+                        supportFTBPick.Add(pair.Key);
                     }
                 }
 
             }
-            return supportPick.Count > 0;
+            return supportFTBPick.Count > 0;
         }
 
         private int NumberOfBonusTerrNeighbours(BotTerritory terr, BotBonus bonus)
@@ -246,6 +237,74 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 externalPickEfficient = !IsInefficientBonus(val.Key) ? true : externalPickEfficient;
             }
             return externalPickEfficient;
+        }
+
+        private void PopulateComboSupportPicks()
+        {
+            if (isFTB)
+            {
+                return;
+            }
+
+            IDictionary<BotTerritory, bool> seenTerritories = new Dictionary<BotTerritory, bool>();
+            BotTerritory pick = mainPick;
+
+            foreach (BotTerritory terr in pick.Neighbors)
+            {
+                if (ContainsTerritory(mainBonus, terr))
+                {
+                    seenTerritories[terr] = true;
+
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (ContainsTerritory(mainBonus, adjTerr))
+                        {
+                            seenTerritories[adjTerr] = true;
+                        }
+                    }
+                }
+            }
+
+            if (Except(mainBonus, seenTerritories.Keys.ToList<BotTerritory>()).Count == 0)
+            {
+                supportComboPick = new List<BotTerritory>(adjacentPickTerritories);
+                supportComboPick.RemoveAt(0);
+            }
+
+            foreach (BotTerritory externalPick in adjacentPickTerritories)
+            {
+                if (externalPick == mainPick)
+                {
+                    continue;
+                }
+                IDictionary<BotTerritory, bool> seenTerritoriesCopy = new Dictionary<BotTerritory, bool>();
+                foreach (KeyValuePair<BotTerritory, bool> pair in seenTerritories)
+                {
+                    seenTerritoriesCopy.Add(pair.Key, pair.Value);
+                }
+
+                foreach(BotTerritory adjTerr in externalPick.Neighbors)
+                {
+                    if (ContainsTerritory(mainBonus, adjTerr))
+                    {
+                        seenTerritoriesCopy.Add(adjTerr, true);
+                    }
+
+                    foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
+                    {
+                        if (ContainsTerritory(mainBonus, adjSecondTerr))
+                        {
+                            seenTerritoriesCopy.Add(adjSecondTerr, true);
+                        }
+                    }
+                }
+
+                if (Except(mainBonus, seenTerritoriesCopy.Keys.ToList<BotTerritory>()).Count == 0)
+                {
+                    supportComboPick.Add(externalPick);
+                }
+
+            }
         }
 
         private Boolean IsManyTurnBonus()
