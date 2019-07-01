@@ -75,11 +75,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
 
             // Check for combos
+            List<ComboBonuses> comboList = new List<ComboBonuses>();
             foreach (KeyValuePair<TerritoryIDType, double> pick in weights)
             {
                 if (BotState.BonusPickValueCalculator.IsComboBonus(map.Territories[pick.Key].Bonuses[0]))
                 {
-
+                    ComboBonuses newCombo = new ComboBonuses(map.Territories[pick.Key].Bonuses[0], map);
+                    comboList.Add(newCombo);
                 }
             }
 
@@ -110,7 +112,136 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 AILog.Log("DEBUG", map.Territories[terr].Details.Name);
             }
+
+
+            ReorderPicksByCombos(firstTurnBonusList, comboList, ref picks);
+
             return picks;
+        }
+
+        private void ReorderPicksByCombos(List<ComboBonuses> ftb, List<ComboBonuses> combos, ref List<TerritoryIDType> picks)
+        {
+
+            if (ftb.Count == 0 && combos.Count == 0)
+            {
+                return;
+            }
+
+            if (ftb.Count != 0)
+            {
+                int counterableFTBCount = 0;
+                foreach (ComboBonuses combo in ftb)
+                {
+                    counterableFTBCount += combo.isCounterable ? 1 : 0;
+                }
+
+                for (int i = ftb.Count - counterableFTBCount - 1; i >= 0; i--)
+                {
+                    for (int j = ftb[i].adjacentPickTerritories.Count; j >= 0; j--)
+                    {
+                        TerritoryIDType temp = ftb[i].adjacentPickTerritories[j].ID;
+                        picks.Remove(temp);
+                        picks.Insert(0, temp);
+                    }
+                }
+
+                if (counterableFTBCount + 1 == ftb.Count && ftb.Count != 1)
+                {
+                    for (int i = ftb.Count - counterableFTBCount; i < ftb.Count; i++)
+                    {
+                        for (int j = 2; j >= 0; j--)
+                        {
+                            TerritoryIDType temp = ftb[i].adjacentPickTerritories[j].ID;
+                            picks.Remove(temp);
+                            picks.Insert(3 + i, temp);
+                        }
+                    }
+                }
+
+                if (counterableFTBCount == ftb.Count && combos.Count == 0)
+                {
+                    if (counterableFTBCount == 1)
+                    {
+                        for (int i = 2; i >= 0; i--)
+                        {
+                            TerritoryIDType temp = ftb[0].adjacentPickTerritories[i].ID;
+                            picks.Remove(temp);
+                            picks.Insert(3, temp);
+                        }
+                    } else
+                    {
+                        for (int i = 1; i >= 0; i--)
+                        {
+                            TerritoryIDType temp = ftb[0].adjacentPickTerritories[i].ID;
+                            picks.Remove(temp);
+                            picks.Insert(0, temp);
+                        }
+                        for (int i = 2; i >= 0; i--)
+                        {
+                            TerritoryIDType temp = ftb[1].adjacentPickTerritories[i].ID;
+                            picks.Remove(temp);
+                            picks.Insert(3, temp);
+                        }
+                    }
+                } else if (counterableFTBCount == ftb.Count)
+                {
+                    for (int i = 1; i >= 0; i++)
+                    {
+                        TerritoryIDType temp = combos[0].adjacentPickTerritories[i].ID;
+                        picks.Remove(temp);
+                        picks.Insert(0, temp);
+                    }
+
+                    if (counterableFTBCount == 1)
+                    {
+                        for (int i = 2; i >= 0; i--)
+                        {
+                            TerritoryIDType temp = ftb[0].adjacentPickTerritories[i].ID;
+                            picks.Remove(temp);
+                            picks.Insert(3, temp);
+                        }
+                    } else
+                    {
+                        for (int i = 0; i < counterableFTBCount - 1; i++)
+                        {
+                            for (int j = 1; j >= 0; j--)
+                            {
+                                TerritoryIDType temp = ftb[i].adjacentPickTerritories[j].ID;
+                                picks.Remove(temp);
+                                picks.Insert(2 + i * 2, temp);
+                            }
+                        }
+                    }
+                }
+            } else
+            {
+                for (int i = combos[0].adjacentPickTerritories.Count; i >= 0; i--)
+                {
+                    TerritoryIDType temp = combos[0].adjacentPickTerritories[i].ID;
+                    picks.Remove(temp);
+                    picks.Insert(0, temp);
+                }
+
+                if (combos.Count > 1)
+                {
+                    for (int i = combos[1].adjacentPickTerritories.Count; i >= 0; i--)
+                    {
+                        TerritoryIDType temp = combos[1].adjacentPickTerritories[i].ID;
+                        picks.Remove(temp);
+                        picks.Insert(3, temp);
+                    }
+                }
+            }
+
+            TrimExcessPicks(ref picks);
+        }
+
+        private void TrimExcessPicks(ref List<TerritoryIDType> picks)
+        {
+            if (picks.Count > 6)
+            {
+                picks.RemoveRange(6, picks.Count);
+            }
         }
     }
 }
