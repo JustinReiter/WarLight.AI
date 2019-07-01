@@ -115,13 +115,25 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         private void ReorderPicksByCombos(List<ComboBonuses> ftb, List<ComboBonuses> combos, ref List<TerritoryIDType> picks)
         {
+            int usableFTB = 0;
+            int usableCombo = 0;
 
-            if (ftb.Count == 0 && combos.Count == 0)
+            for (int i = 0; i < ftb.Count; i++)
+            {
+                usableFTB += ftb[i].isFTB ? 1 : 0;
+            }
+            for (int i = 0; i < combos.Count; i++)
+            {
+                usableCombo += combos[i].isCombo ? 1 : 0;
+            }
+
+
+            if (usableFTB == 0 && usableCombo == 0)
             {
                 return;
             }
 
-            if (ftb.Count != 0)
+            if (usableFTB != 0)
             {
                 int counterableFTBCount = 0;
                 foreach (ComboBonuses combo in ftb)
@@ -129,7 +141,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     counterableFTBCount += combo.isCounterable ? 1 : 0;
                 }
 
-                for (int i = ftb.Count - counterableFTBCount - 1; i >= 0; i--)
+                for (int i = usableFTB - counterableFTBCount - 1; i >= 0; i--)
                 {
                     for (int j = ftb[i].adjacentPickTerritories.Count - 1; j >= 0; j--)
                     {
@@ -139,9 +151,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     }
                 }
 
-                if (counterableFTBCount + 1 == ftb.Count && ftb.Count != 1)
+                if (counterableFTBCount + 1 == usableFTB && usableFTB != 1)
                 {
-                    for (int i = ftb.Count - counterableFTBCount; i < ftb.Count; i++)
+                    for (int i = usableFTB - counterableFTBCount; i < usableFTB; i++)
                     {
                         for (int j = 2; j >= 0; j--)
                         {
@@ -152,7 +164,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     }
                 }
 
-                if (counterableFTBCount == ftb.Count && combos.Count == 0)
+                if (counterableFTBCount == usableFTB && usableCombo == 0)
                 {
                     if (counterableFTBCount == 1)
                     {
@@ -177,9 +189,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                             picks.Insert(3, temp);
                         }
                     }
-                } else if (counterableFTBCount == ftb.Count)
+                } else if (counterableFTBCount == usableFTB)
                 {
-                    for (int i = 1; i >= 0; i++)
+                    for (int i = 1; i >= 0; i--)
                     {
                         TerritoryIDType temp = combos[0].adjacentPickTerritories[i].ID;
                         picks.Remove(temp);
@@ -216,7 +228,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     picks.Insert(0, temp);
                 }
 
-                if (combos.Count > 1)
+                if (usableCombo > 1)
                 {
                     for (int i = combos[1].adjacentPickTerritories.Count; i >= 0; i--)
                     {
