@@ -223,6 +223,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 expansionValue -= 15;
             }
 
+            // Add modifier to prioritize smaller bonus amounts (+20 for 3er, +15 for 4er, +10 for 5er
+            expansionValue += (7 - bonus.Amount) * 5;
+
             //expansionValue = GetIncomeCostsRatio(bonus);
 
             //var neutralArmies = bonus.NeutralArmies.DefensePower;

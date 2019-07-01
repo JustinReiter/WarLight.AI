@@ -268,8 +268,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
-            double expansionValue = 0;
-
+            double expansionValue = 0.0;
             if (IsExpansionWorthless(bonus))
             {
                 return expansionValue;
