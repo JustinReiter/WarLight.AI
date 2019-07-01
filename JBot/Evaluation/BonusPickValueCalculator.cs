@@ -202,7 +202,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return adjustedFactor;
         }
 
-
+        /// <summary>
+        ///     Determines the score for different bonuses based on factors such as efficiency, wastelands, pick-conditions, locations
+        /// </summary>
+        /// <param name="bonus"></param>
+        /// <param name="useNeighborBonusFactor"></param>
+        /// <returns></returns>
         public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
@@ -223,44 +228,29 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 expansionValue -= 15;
             }
 
-            // Add modifier to prioritize smaller bonus amounts (+20 for 3er, +15 for 4er, +10 for 5er
+            // Deduct if pick is between all territories (CA and Ant)
+            if (bonus.Details.Name.Equals("Central America"))
+            {
+                foreach (BotTerritory terr in bonus.Territories)
+                {
+                    if (terr.Details.Name.Equals("Mexico"))
+                    {
+                        expansionValue -= 8;
+                    }
+                }
+            } else if (bonus.Details.Name.Equals("Antarctica"))
+            {
+                foreach (BotTerritory terr in bonus.Territories)
+                {
+                    if (terr.Details.Name.Equals("South Pole"))
+                    {
+                        expansionValue -= 8;
+                    }
+                }
+            }
+
+            // Add modifier to prioritize smaller bonus amounts (+20 for 3er, +15 for 4er, +10 for 5er)
             expansionValue += (7 - bonus.Amount) * 5;
-
-            //expansionValue = GetIncomeCostsRatio(bonus);
-
-            //var neutralArmies = bonus.NeutralArmies.DefensePower;
-            //double neutralArmiesFactor = GetNeutralArmiesFactor(neutralArmies);
-
-            //int allTerritories = bonus.Territories.Count;
-            //double territoryFactor = GetTerritoryFactor(allTerritories);
-
-
-            //int immediatelyCounteredTerritories = bonus.GetOwnedTerritoriesBorderingOpponent().Count;
-            //double immediatelyCounteredTerritoriesFactor = GetImmediatelyCounteredTerritoryFactor(immediatelyCounteredTerritories);
-
-            //var allCounteredTerritories = GetCounteredTerritories(bonus, BotState.Me.ID);
-            //double allCounteredTerritoriesFactor = GetAllCounteredTerritoryFactor(allCounteredTerritories);
-
-            //int amountNeighborBonusesWithOpponent = 0;
-            //var neighborBonuses = bonus.GetNeighborBonuses();
-            //foreach (var neighborBonus in neighborBonuses)
-            //{
-            //    if (neighborBonus.ContainsOpponentPresence())
-            //    {
-            //        amountNeighborBonusesWithOpponent++;
-            //    }
-            //}
-            //double opponentNeighborBonusFactor = GetOpponentInNeighborBonusFactor(amountNeighborBonusesWithOpponent);
-            //double borderTerritoriesFactor = getBorderTerritoriesFactor(bonus);
-
-            //double completeFactor = neutralArmiesFactor + territoryFactor + immediatelyCounteredTerritoriesFactor + allCounteredTerritoriesFactor + opponentNeighborBonusFactor + borderTerritoriesFactor;
-            //if (useNeighborBonusFactor)
-            //{
-            //    completeFactor += GetNeighborBonusesFactor(bonus);
-            //}
-            //completeFactor = Math.Min(completeFactor, 0.8);
-
-            //expansionValue = expansionValue - (expansionValue * completeFactor);
             return expansionValue;
         }
 
@@ -521,12 +511,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
             return UnseenTerritories;
         }
-
-
-
-
-
-
     }
 
 

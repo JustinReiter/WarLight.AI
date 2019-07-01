@@ -79,45 +79,57 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             }
 
-            List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
-            //StatefulFogRemover.PickedTerritories = picks;
 
-            AILog.Log("DEBUG", "BEFORE");
-            foreach (var terr in picks)
-            {
-                AILog.Log("DEBUG", map.Territories[terr].Details.Name);
-            }
 
-            for (int j = 0; j < firstTurnBonusList.Count; j++)
+            AILog.Log("\nDEBUG", "BEFORE LIST");
+            foreach (ComboBonuses ftb in firstTurnBonusList)
             {
-                if (firstTurnBonusList[j].isFTB)
+                AILog.Log("DEBUG", ftb.mainPick.Details.Name);
+                for (int i = 1; i < ftb.adjacentPickTerritories.Count; i++)
                 {
-                    for (int i = firstTurnBonusList[0].adjacentPickTerritories.Count - 1; i >= 0; i--)
-                    {
-                        BotTerritory temp = firstTurnBonusList[0].adjacentPickTerritories[i];
-                        picks.Remove(temp.ID);
-                        picks.Insert(0, temp.ID);
-                    }
+                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name);
                 }
             }
 
-            AILog.Log("DEBUG", "BEFORE");
+            AILog.Log("\nDEBUG", "MIDDLE");
+
+            foreach (ComboBonuses combo in comboList)
+            {
+                AILog.Log("DEBUG", combo.mainPick.Details.Name);
+                for (int i = 1; i < combo.adjacentPickTerritories.Count; i++)
+                {
+                    AILog.Log("\tDEBUG", combo.adjacentPickTerritories[i].Details.Name);
+                }
+            }
+            AILog.Log("\nDEBUG", "AFTER LIST");
+
+
+
+            List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
+            //StatefulFogRemover.PickedTerritories = picks;
+
+            AILog.Log("\nDEBUG", "BEFORE");
             foreach (var terr in picks)
             {
                 AILog.Log("DEBUG", map.Territories[terr].Details.Name);
             }
 
-
             ReorderPicksByCombos(firstTurnBonusList, comboList, ref picks);
 
+            AILog.Log("DEBUG", "AFTER");
+            foreach (var terr in picks)
+            {
+                AILog.Log("DEBUG", map.Territories[terr].Details.Name);
+            }
             return picks;
         }
 
+        // Check Tree Diagram for reference of reordering
         private void ReorderPicksByCombos(List<ComboBonuses> ftb, List<ComboBonuses> combos, ref List<TerritoryIDType> picks)
         {
+            // Determine amount of useful FTBs and Combos
             int usableFTB = 0;
             int usableCombo = 0;
-
             for (int i = 0; i < ftb.Count; i++)
             {
                 usableFTB += ftb[i].isFTB ? 1 : 0;
@@ -127,12 +139,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 usableCombo += combos[i].isCombo ? 1 : 0;
             }
 
-
+            // Case of no combos/FTBs
             if (usableFTB == 0 && usableCombo == 0)
             {
                 return;
             }
 
+            // Paths of tree where there is at least 1 FTB ELSE 0 usable FTBs
             if (usableFTB != 0)
             {
                 int counterableFTBCount = 0;
@@ -141,6 +154,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     counterableFTBCount += combo.isCounterable ? 1 : 0;
                 }
 
+                // Path of trees where there are non-counterable FTBS, place 1/2 | 3/4
                 for (int i = usableFTB - counterableFTBCount - 1; i >= 0; i--)
                 {
                     for (int j = ftb[i].adjacentPickTerritories.Count - 1; j >= 0; j--)
@@ -151,6 +165,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     }
                 }
 
+                // Case of 1/2 or 2/3 FTBs counterable
                 if (counterableFTBCount + 1 == usableFTB && usableFTB != 1)
                 {
                     for (int i = usableFTB - counterableFTBCount; i < usableFTB; i++)
@@ -164,8 +179,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     }
                 }
 
+                // If 1/1 or 2/2 or 3/3 Counterable FTBS and 0 combos ELSEIF  +1 combos
                 if (counterableFTBCount == usableFTB && usableCombo == 0)
                 {
+                    // If 1/1 Counterable FTBs ELSE 2/2 | 3/3 counterable FTBs
                     if (counterableFTBCount == 1)
                     {
                         for (int i = 2; i >= 0; i--)
@@ -221,7 +238,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             } else
             {
-                for (int i = combos[0].adjacentPickTerritories.Count; i >= 0; i--)
+                // Case of no FTBs and at least 1 combo
+                for (int i = combos[0].adjacentPickTerritories.Count - 1; i >= 0; i--)
                 {
                     TerritoryIDType temp = combos[0].adjacentPickTerritories[i].ID;
                     picks.Remove(temp);
@@ -230,7 +248,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 if (usableCombo > 1)
                 {
-                    for (int i = combos[1].adjacentPickTerritories.Count; i >= 0; i--)
+                    for (int i = combos[1].adjacentPickTerritories.Count- 1; i >= 0; i--)
                     {
                         TerritoryIDType temp = combos[1].adjacentPickTerritories[i].ID;
                         picks.Remove(temp);

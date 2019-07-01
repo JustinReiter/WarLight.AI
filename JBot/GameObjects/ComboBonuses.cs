@@ -32,21 +32,18 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
             isCombo = (isFTB || adjacentPickTerritories.Count > 1) && !IsManyTurnBonus();
             isEfficient = !IsInefficientBonus(mainBonus) && IsEfficientCombo();
-            ReorderEfficientPicks();
+            ReorderPicks();
         }
 
-        private void ReorderEfficientPicks()
+        private void ReorderPicks()
         {
-
-
-            int pointer = supportFTBPick.Count + 1;
-
             BotTerritory[] picks = new BotTerritory[adjacentPickTerritories.Count - 1];
             Array.Copy(adjacentPickTerritories.ToArray(), 1, picks, 0, picks.Length);
 
 
             if (isFTB)
             {
+                ReorderSupportFTBs();
                 if (supportFTBPick.Count != 0)
                 {
                     for (int i = 0; i < supportFTBPick.Count; i++)
@@ -77,6 +74,16 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             }
 
             adjacentPickTerritories = list;
+        }
+
+        private void ReorderSupportFTBs()
+        {
+            
+        }
+
+        private void ReorderSupportCombos()
+        {
+
         }
 
         private void Swap(int pointer, List<BotTerritory> list)
