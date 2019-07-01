@@ -425,10 +425,17 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return outvar;
         }
 
-        public bool IsComboBonus(BotBonus bonus)
+        public bool IsComboBonus(BotBonus bonus, BotMap map)
         {
+            Boolean isCombo = false;
 
-            return true;
+            if (bonus.Amount > 4 || IsInefficientBonus(bonus) || IsWastelandedBonus(bonus))
+            {
+                return isCombo;
+            }
+
+            ComboBonuses temp = new ComboBonuses(bonus, map);
+            return temp.isCombo;
         }
 
         private Boolean IsManyTurnBonus(BotBonus bonus, ComboBonuses optionalCombo = null)

@@ -64,21 +64,15 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
             List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
+            List<ComboBonuses> comboList = new List<ComboBonuses>();
             foreach (KeyValuePair<TerritoryIDType, double> pick in weights)
             {
-                // Checks for FTB
+                // Checks for FTB and combos
                 if (BotState.BonusPickValueCalculator.IsFirstTurnBonus(map.Territories[pick.Key].Bonuses[0]))
                 {
                     ComboBonuses newCombo = new ComboBonuses(map.Territories[pick.Key].Bonuses[0], map);
                     firstTurnBonusList.Add(newCombo);
-                }
-            }
-
-            // Check for combos
-            List<ComboBonuses> comboList = new List<ComboBonuses>();
-            foreach (KeyValuePair<TerritoryIDType, double> pick in weights)
-            {
-                if (BotState.BonusPickValueCalculator.IsComboBonus(map.Territories[pick.Key].Bonuses[0]))
+                } else if (BotState.BonusPickValueCalculator.IsComboBonus(map.Territories[pick.Key].Bonuses[0], map))
                 {
                     ComboBonuses newCombo = new ComboBonuses(map.Territories[pick.Key].Bonuses[0], map);
                     comboList.Add(newCombo);
