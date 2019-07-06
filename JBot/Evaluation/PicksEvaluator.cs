@@ -62,6 +62,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 weights[ausID] -= 25;
             }
 
+            foreach (TerritoryIDType terrID in weights.Keys)
+            {
+                AILog.Log("PICK VALUES", map.Territories[terrID].Details.Name + ": " + weights[terrID]);
+            }
+
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
             List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
             List<ComboBonuses> comboList = new List<ComboBonuses>();
@@ -83,35 +88,35 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             ReorderCombosByNumberOfTerritories(ref comboList);
 
 
-
+            AILog.Log("OUTPUT", "\nNumber of FTBs: " + firstTurnBonusList.Count + "\nNumber of Combos: " + comboList.Count);
             AILog.Log("\nDEBUG", "BEFORE LIST");
             foreach (ComboBonuses ftb in firstTurnBonusList)
             {
                 AILog.Log("DEBUG", ftb.mainPick.Details.Name);
                 for (int i = 1; i < ftb.adjacentPickTerritories.Count; i++)
                 {
-                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name.Equals(ftb.mainPick.Details.Name) ? ftb.adjacentPickTerritories[++i].Details.Name : ftb.adjacentPickTerritories[i].Details.Name);
                 }
             }
 
-            AILog.Log("\nDEBUG", "MIDDLE");
+            AILog.Log("DEBUG", "MIDDLE");
 
             foreach (ComboBonuses combo in comboList)
             {
                 AILog.Log("DEBUG", combo.mainPick.Details.Name);
-                for (int i = 1; i < combo.adjacentPickTerritories.Count; i++)
+                for (int i = 0; i < combo.adjacentPickTerritories.Count; i++)
                 {
-                    AILog.Log("\tDEBUG", combo.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("\tDEBUG", combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name);
                 }
             }
-            AILog.Log("\nDEBUG", "AFTER LIST");
+            AILog.Log("DEBUG", "AFTER LIST");
 
 
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;
 
-            AILog.Log("\nDEBUG", "BEFORE");
+            AILog.Log("DEBUG", "BEFORE");
             foreach (var terr in picks)
             {
                 AILog.Log("DEBUG", map.Territories[terr].Details.Name);
@@ -286,9 +291,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         private void TrimExcessPicks(ref List<TerritoryIDType> picks)
         {
-            if (picks.Count > 6)
+            int picksAllowed = BotState.Players.Count * BotState.Settings.LimitDistributionTerritories;
+            if (picks.Count > picksAllowed)
             {
-                picks.RemoveRange(6, picks.Count - 6);
+                picks.RemoveRange(picksAllowed, picks.Count - picksAllowed);
             }
         }
     }

@@ -228,6 +228,17 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 expansionValue -= 15;
             }
 
+            if (bonus.Details.Name.Equals("Greenland"))
+            {
+                foreach (BotTerritory terr in bonus.Territories)
+                {
+                    if (terr.Details.Name.Equals("Nord") || terr.Details.Name.Equals("Itseqqortoormiit"))
+                    {
+                        expansionValue -= 10;
+                    }
+                }
+            }
+
             // Deduct if pick is between all territories (CA and Ant)
             if (bonus.Details.Name.Equals("Central America"))
             {
@@ -296,7 +307,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 return isFirstTurnBonus;
             }
 
-            IDictionary<TerritoryIDType, int> pickTerritories = new Dictionary<TerritoryIDType, int>();
             foreach (var terr in bonus.Territories)
             {
                 if (terr.Armies.NumArmies != 0)
@@ -313,14 +323,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             foreach (var adjTerr in adjBonusTerr.Neighbors)
                             {
-                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0)
+                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0 && !IsInefficientBonus(adjTerr.Bonuses[0]) && IsWastelandedBonus(adjTerr.Bonuses[0]))
                                 {
-                                    isFirstTurnBonus = true;
-                                    if (!pickTerritories.ContainsKey(adjTerr.ID))
-                                    {
-                                        pickTerritories.Add(adjTerr.ID, 0);
-                                    }
-                                    pickTerritories[adjTerr.ID]++;
+                                    return true;
                                 }
                             }
                         }
@@ -344,7 +349,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             foreach (var adjTerr in bonusTerr.Neighbors)
                             {
-                                if (adjTerr.Armies.NumArmies == 0)
+                                if (adjTerr.Armies.NumArmies == 0 && !IsInefficientBonus(adjTerr.Bonuses[0]) && !IsWastelandedBonus(adjTerr.Bonuses[0]))
                                 {
                                     goto CONTINUELOOP;
                                 }
@@ -417,11 +422,9 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
         public bool IsComboBonus(BotBonus bonus, BotMap map)
         {
-            Boolean isCombo = false;
-
             if (bonus.Amount > 4 || IsInefficientBonus(bonus) || IsWastelandedBonus(bonus))
             {
-                return isCombo;
+                return false;
             }
 
             ComboBonuses temp = new ComboBonuses(bonus, map);

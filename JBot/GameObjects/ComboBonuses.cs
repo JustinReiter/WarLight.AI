@@ -34,9 +34,10 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             RemoveDuplicates(ref supportComboPick);
             isFTB = IsFirstTurnBonus(mainBonus);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
-            isCombo = (isFTB || supportComboPick.Count > 1) && !IsManyTurnBonus();
+            isCombo = (isFTB || supportComboPick.Count >= 1) && !IsManyTurnBonus();
             isEfficient = !IsInefficientBonus(mainBonus) && IsEfficientCombo();
             ReorderPicks();
+            RemoveDuplicates(ref adjacentPickTerritories);
         }
 
         private void ReorderPicks()
@@ -49,7 +50,6 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
             if (isFTB)
             {
-                ReorderSupportFTBs();
                 if (supportFTBPick.Count != 0)
                 {
                     for (int i = 0; i < supportFTBPick.Count; i++)
@@ -70,6 +70,10 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
             List<BotTerritory> list = new List<BotTerritory>(picks);
             list.Insert(0, mainPick);
+            if (isCombo || isFTB)
+            {
+                ReorderSupportPicks(ref list);
+            }
 
             for (int i = 0; i < adjacentPickTerritories.Count; i++)
             {
@@ -99,14 +103,35 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             }
         }
 
-        private void ReorderSupportFTBs()
+        private void ReorderSupportPicks(ref List<BotTerritory> list)
         {
-            
+            BotTerritory pointer = list[1];
+            for (int i = 1; i < list.Count; i++)
+            {
+                if (NumberBonusBorders(list[i]) > 1 && NumberBonusBorders(list[i]) >= NumberBonusBorders(pointer))
+                {
+                    pointer = list[i];
+                } 
+            }
+
+            if (NumberBonusBorders(pointer) > 1)
+            {
+                list.Remove(pointer);
+                list.Insert(0, pointer);
+            }
         }
 
-        private void ReorderSupportCombos()
+        private int NumberBonusBorders(BotTerritory terr)
         {
-
+            int result = 0;
+            foreach (BotTerritory adjTerr in terr.Neighbors)
+            {
+                if (ContainsTerritory(adjTerr))
+                {
+                    result++;
+                }
+            }
+            return result;
         }
 
         private void Swap(int pointer, List<BotTerritory> list)
