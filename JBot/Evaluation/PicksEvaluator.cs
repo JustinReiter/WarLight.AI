@@ -14,6 +14,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             this.BotState = state;
         }
 
+        /// <summary>
+        /// Obtains the picks that will be used for the game. Will determine an initial score that will be used to order to picks initially, followed by finding FTBs and combos
+        /// that will be interspersed based on cases outlined in tree diagram
+        /// </summary>
+        /// <returns>List of territory IDs of the final picks to be sent</returns>
         public List<TerritoryIDType> GetPicks()
         {
             if (BotState.Map.IsScenarioDistribution(BotState.Settings.DistributionModeID))
@@ -93,9 +98,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             foreach (ComboBonuses ftb in firstTurnBonusList)
             {
                 AILog.Log("DEBUG", ftb.mainPick.Details.Name);
-                for (int i = 1; i < ftb.adjacentPickTerritories.Count; i++)
+                for (int i = 0; i < ftb.adjacentPickTerritories.Count; i++)
                 {
-                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name.Equals(ftb.mainPick.Details.Name) ? ftb.adjacentPickTerritories[++i].Details.Name : ftb.adjacentPickTerritories[i].Details.Name);
+                    if (ftb.adjacentPickTerritories[i].Details.Name.Equals(ftb.mainPick.Details.Name))
+                    {
+                        continue;
+                    }
+                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name);
                 }
             }
 
@@ -106,6 +115,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 AILog.Log("DEBUG", combo.mainPick.Details.Name);
                 for (int i = 0; i < combo.adjacentPickTerritories.Count; i++)
                 {
+                    if (combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name))
+                    {
+                        continue;
+                    }
                     AILog.Log("\tDEBUG", combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name);
                 }
             }
@@ -132,6 +145,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return picks;
         }
 
+        /// <summary>
+        /// Prioritizes combos or FTBs that contain less picks adjacent to the bonus
+        /// </summary>
+        /// <param name="list"></param>
         private void ReorderCombosByNumberOfTerritories(ref List<ComboBonuses> list)
         {
             List<TerritoryIDType> seenPickIDs = new List<TerritoryIDType>();
@@ -153,7 +170,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
         }
 
-        // Check Tree Diagram for reference of reordering
+        /// <summary>
+        /// Final reshuffling of picks to organize according to situations of number of (counterable) FTBs and counters. 
+        /// Check tree diagram for ordering of picks by case
+        /// </summary>
+        /// <param name="ftb">List of FTBs</param>
+        /// <param name="combos">List of combos</param>
+        /// <param name="picks">List of current picks</param>
         private void ReorderPicksByCombos(List<ComboBonuses> ftb, List<ComboBonuses> combos, ref List<TerritoryIDType> picks)
         {
             // Determine amount of useful FTBs and Combos
@@ -289,6 +312,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             TrimExcessPicks(ref picks);
         }
 
+        /// <summary>
+        /// Trims the number of final picks in the list to correspond to the maximum number of allowable picks. Due to the nature of the shuffling of picks, picks after 6 have
+        /// no guarantee for relation to any combos and instead should follow scoring
+        /// </summary>
+        /// <param name="picks"></param>
         private void TrimExcessPicks(ref List<TerritoryIDType> picks)
         {
             int picksAllowed = BotState.Players.Count * BotState.Settings.LimitDistributionTerritories;
