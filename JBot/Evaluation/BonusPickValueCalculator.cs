@@ -244,7 +244,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 foreach (BotTerritory terr in bonus.Territories)
                 {
-                    if (terr.Details.Name.Equals("Mexico"))
+                    if (terr.Details.Name.Equals("Mexico") && terr.Armies.NumArmies == 0)
                     {
                         expansionValue -= 8;
                     }
@@ -253,7 +253,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 foreach (BotTerritory terr in bonus.Territories)
                 {
-                    if (terr.Details.Name.Equals("South Pole"))
+                    if (terr.Details.Name.Equals("South Pole") && terr.Armies.NumArmies == 0)
                     {
                         expansionValue -= 8;
                     }

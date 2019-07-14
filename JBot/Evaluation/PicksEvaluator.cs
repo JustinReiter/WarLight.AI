@@ -69,7 +69,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             foreach (TerritoryIDType terrID in weights.Keys)
             {
-                AILog.Log("PICK VALUES", map.Territories[terrID].Details.Name + ": " + weights[terrID]);
+                AILog.Log("PICK VALUES", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
             }
 
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
@@ -94,53 +94,55 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
 
             AILog.Log("OUTPUT", "\nNumber of FTBs: " + firstTurnBonusList.Count + "\nNumber of Combos: " + comboList.Count);
-            AILog.Log("\nDEBUG", "BEFORE LIST");
+            AILog.Log("\nDEBUG", "BEFORE FTBS AND COMBOS");
             foreach (ComboBonuses ftb in firstTurnBonusList)
             {
-                AILog.Log("DEBUG", ftb.mainPick.Details.Name);
+                AILog.Log("DEBUG", "BONUS: " + ftb.mainBonus.Details.Name);
+                AILog.Log("DEBUG\t", ftb.mainPick.Details.Name);
                 for (int i = 0; i < ftb.adjacentPickTerritories.Count; i++)
                 {
                     if (ftb.adjacentPickTerritories[i].Details.Name.Equals(ftb.mainPick.Details.Name))
                     {
                         continue;
                     }
-                    AILog.Log("\tDEBUG", ftb.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("DEBUG\t\t", ftb.adjacentPickTerritories[i].Details.Name);
                 }
             }
 
-            AILog.Log("DEBUG", "MIDDLE");
+            AILog.Log("DEBUG", "AFTER FTBS");
 
             foreach (ComboBonuses combo in comboList)
             {
-                AILog.Log("DEBUG", combo.mainPick.Details.Name);
+                AILog.Log("DEBUG", "BONUS: " + combo.mainBonus.Details.Name);
+                AILog.Log("DEBUG\t", combo.mainPick.Details.Name);
                 for (int i = 0; i < combo.adjacentPickTerritories.Count; i++)
                 {
                     if (combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name))
                     {
                         continue;
                     }
-                    AILog.Log("\tDEBUG", combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("\tDEBUG\t\t", combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name);
                 }
             }
-            AILog.Log("DEBUG", "AFTER LIST");
+            AILog.Log("DEBUG", "AFTER COMBOS");
 
 
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;
 
-            AILog.Log("DEBUG", "BEFORE");
+            AILog.Log("DEBUG", "BEFORE FINAL RESHUFFLE");
             foreach (var terr in picks)
             {
-                AILog.Log("DEBUG", map.Territories[terr].Details.Name);
+                AILog.Log("DEBUG", map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
             }
 
             ReorderPicksByCombos(firstTurnBonusList, comboList, ref picks);
 
-            AILog.Log("DEBUG", "AFTER");
+            AILog.Log("DEBUG", "AFTER FINAL RESHUFFLE");
             foreach (var terr in picks)
             {
-                AILog.Log("DEBUG", map.Territories[terr].Details.Name);
+                AILog.Log("DEBUG", map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
             }
             return picks;
         }
