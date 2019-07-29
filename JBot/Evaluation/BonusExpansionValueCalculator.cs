@@ -349,30 +349,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         }
 
 
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

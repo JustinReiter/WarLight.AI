@@ -2,6 +2,7 @@
 //using System.Linq;
 //using WarLight.AI.JBot.Bot;
 //using WarLight.Shared.AI;
+//using WarLight.Shared.AI.JBot.Bot;
 
 //namespace WarLight.AI.JBot.Evaluation
 //{

@@ -51,7 +51,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 if(map.Territories[terrID].Bonuses.Count > 0)
                 {
                     BotBonus bonus = map.Territories[terrID].Bonuses[0];
-                    bonus.SetMyExpansionValueHeuristic();
+                    bonus.SetMyPickValueHeuristic();
                     double r = bonus.ExpansionValue;
                     return r;
                 }
@@ -162,7 +162,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 } else
                 {
                     seenPickIDs.Add(list[i].mainPick.ID);
-                    if (list[i].adjacentPickTerritories.Count < 3)
+                    if (list[i].adjacentPickTerritories.Count < 3 && list[i].isEfficient)
                     {
                         ComboBonuses temp = list[i];
                         list.Remove(temp);

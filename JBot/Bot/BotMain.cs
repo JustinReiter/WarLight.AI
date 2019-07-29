@@ -221,7 +221,7 @@ namespace WarLight.Shared.AI.JBot.Bot
 
         public string Description()
         {
-            return "Bot written originally for an AI competition by Norman and modified by Justin and Joi";
+            return "Bot written originally for an AI competition by Norman and modified by JustinR17 and Joi179";
         }
 
         public bool SupportsSettings(GameSettings settings, out string whyNot)
