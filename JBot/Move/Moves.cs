@@ -41,13 +41,21 @@ namespace WarLight.Shared.AI.JBot.Move
             foreach (var order in this.Orders)
             {
                 if (order is BotOrderDeploy)
+                {
                     ret.Add(Convert((BotOrderDeploy)order));
+                }
                 else if (order is BotOrderAttackTransfer)
+                {
                     ret.Add(Convert((BotOrderAttackTransfer)order));
+                }
                 else if (order is BotOrderGeneric)
+                {
                     ret.Add(order.As<BotOrderGeneric>().Order);
+                }
                 else
+                {
                     throw new Exception("Unexpected order type");
+                }
             }
 
             return ret;

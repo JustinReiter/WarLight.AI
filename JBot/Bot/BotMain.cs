@@ -211,6 +211,7 @@ namespace WarLight.Shared.AI.JBot.Bot
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
             Debug.Debug.PrintTerritories(VisibleMap, this);
             //LastVisibleMap = VisibleMap.GetMapCopy();
+            Debug.Debug.PrintFinalOrders(MovesCalculator.CalculatedMoves);
             return this.MovesCalculator.CalculatedMoves.Convert();
         }
 

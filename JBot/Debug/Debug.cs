@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WarLight.Shared.AI.JBot.Bot;
@@ -58,6 +59,25 @@ namespace WarLight.Shared.AI.JBot.Debug
                 }
 
                 AILog.Log("Debug", territory.Details.Name + ": (" + player + " | " + territory.IsOwnershipHeuristic + ")  --> " + territory.Armies.AttackPower);
+            }
+        }
+
+        public static void PrintFinalOrders(Move.Moves orders)
+        {
+            foreach (var order in orders.Orders)
+            {
+                if (order is BotOrderDeploy)
+                {
+                    AILog.Log("FINAL DEPLOY: ", ((BotOrderDeploy)order).Armies + " TO " + ((BotOrderDeploy)order).Territory.Details.Name + "(" + ((BotOrderDeploy)order).Territory.Bonuses[0].Details.Name + ")");
+                }
+                else if (order is BotOrderAttackTransfer)
+                {
+                    AILog.Log("FINAL ATTACK/TRANSFER: ", ((BotOrderAttackTransfer)order).Armies.NumArmies + " FROM " + ((BotOrderAttackTransfer)order).From.Details.Name + "(" + ((BotOrderAttackTransfer)order).From.Bonuses[0].Details.Name + ")" + " TO " + ((BotOrderAttackTransfer)order).To.Details.Name + "(" + ((BotOrderAttackTransfer)order).From.Bonuses[0].Details.Name + ")");
+                }
+                else
+                {
+                    AILog.Log("FINAL ATTACK/TRANSFERL: ", "Unexpected Move");
+                }
             }
         }
 
