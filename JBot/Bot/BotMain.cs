@@ -187,6 +187,9 @@ namespace WarLight.Shared.AI.JBot.Bot
             if (NumberOfTurns > 0)
             {
                 LastVisibleMapUpdater.StoreOpponentDeployment();
+            } else if (NumberOfTurns == 0)
+            {
+                Memory.PickTracker.SetConfirmedPicks(this);
             }
             StatelessFogRemover.RemoveFog();
             //FogRemover.RemoveFog();

@@ -9,7 +9,9 @@ namespace WarLight.Shared.AI.JBot.Memory
 {
     static class PickTracker
     {
-        public static List<TerritoryIDType> _picks = new List<TerritoryIDType>();
+        private static List<TerritoryIDType> _picks = new List<TerritoryIDType>();
+        private static List<TerritoryIDType> _chosenPicks = new List<TerritoryIDType>();
+        private static List<TerritoryIDType> _enemyPicks = new List<TerritoryIDType>();
 
         public static TerritoryIDType GetPick(int pickSlot)
         {
@@ -33,6 +35,51 @@ namespace WarLight.Shared.AI.JBot.Memory
                 _picks.Add(terr.ID);
             }
         }
+
+        public static List<TerritoryIDType> GetChosenPickList()
+        {
+            return _chosenPicks;
+        }
+
+        public static void SetChosenPickList(List<TerritoryIDType> chosenPicks)
+        {
+            _chosenPicks = chosenPicks;
+        }
+
+        public static List<TerritoryIDType> GetEnemyPickList()
+        {
+            return _enemyPicks;
+        }
+
+        public static void SetEnemyPickList(List<TerritoryIDType> chosenPicks)
+        {
+            _chosenPicks = chosenPicks;
+        }
+
+        public  static int GetEnemyListCount()
+        {
+            return _enemyPicks.Count;
+        }
+
+        public static void SetConfirmedPicks(BotMain bot)
+        {
+            SetChosenPickList(bot.GetPicks());
+            SetEnemyPickList(Except(_picks, _chosenPicks));
+        }
+
+        private static List<TerritoryIDType> Except(List<TerritoryIDType> main, List<TerritoryIDType> secondary)
+        {
+            List<TerritoryIDType> list = new List<TerritoryIDType>();
+            foreach (TerritoryIDType terr in secondary)
+            {
+                if (!main.Contains(terr))
+                {
+                    list.Add(terr);
+                }
+            }
+            return list;
+        }
+
 
     }
 }
