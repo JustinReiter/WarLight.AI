@@ -14,29 +14,35 @@ namespace WarLight.Shared.AI.JBot.Memory
 
 
 
-        public static int GetDeploys(PlayerIDType playerId, BotMain bot)
+        public static int GetDeploys(PlayerIDType playerId, int turn)
         {
-            if (GetTurns() <= bot.NumberOfTurns)
+            if (GetTurns() > turn)
             {
-                return deploysByTurn[bot.NumberOfTurns][playerId];
+                return deploysByTurn[turn][playerId];
             }
             throw new IndexOutOfRangeException();
         }
 
-        public static void SetDeploys(PlayerIDType playerId, int deploys, BotMain bot)
+        public static void SetDeploys(PlayerIDType playerId, int deploys, int turn)
         {
-            if (GetTurns() < bot.NumberOfTurns)
+            if (GetTurns() < turn)
             {
                 deploysByTurn.Add(new Dictionary<PlayerIDType, int>());
             }
-            deploysByTurn[bot.NumberOfTurns][playerId] = deploys;
+            deploysByTurn[turn][playerId] = deploys;
         }
 
+        public static void AddTurn(int turn)
+        {
+            while (GetTurns() <= turn)
+            {
+                deploysByTurn.Add(new Dictionary<PlayerIDType, int>());
+            }
+        }
 
         private static int GetTurns()
         {
             return deploysByTurn.Count;
         }
-
     }
 }

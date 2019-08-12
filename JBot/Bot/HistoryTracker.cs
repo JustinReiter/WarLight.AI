@@ -29,6 +29,8 @@ namespace WarLight.Shared.AI.JBot.Bot
 
                 if (BotState.NumberOfTurns > 0)
                     DeploymentHistory.Update(opponent.ID, GetOpponentDeployment(opponent.ID));
+                else
+                    DeploymentHistory.Update(opponent.ID, 5);
             }
         }
 

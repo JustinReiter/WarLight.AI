@@ -183,7 +183,7 @@ namespace WarLight.Shared.AI.JBot.Bot
         public List<GameOrder> GetOrders()
         {
             Debug.Debug.PrintDebugOutputBeginTurn(this);
-
+            Memory.DeploymentTracker.AddTurn(NumberOfTurns - 1);
             if (NumberOfTurns > 0)
             {
                 LastVisibleMapUpdater.StoreOpponentDeployment();
