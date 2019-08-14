@@ -148,7 +148,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         }
 
         /// <summary>
-        /// Prioritizes combos or FTBs that contain less picks adjacent to the bonus
+        /// Prioritizes combos or FTBs that contain less picks adjacent to the bonus. Also places Sub Combos at bottom of list with exception of counterable combos
         /// </summary>
         /// <param name="list"></param>
         private void ReorderCombosByNumberOfTerritories(ref List<ComboBonuses> list)
@@ -170,6 +170,43 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     }
                 }
             }
+
+            if (list.Count > 0 && !list[0].isFTB)
+            {
+                List<TerritoryIDType> hasSeen = new List<TerritoryIDType>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (!hasSeen.Contains(list[i].mainPick.Details.ID) && (list[i].mainBonus.Amount == 3 || GetSmallestBonus(list[i].isFTB ? list[i].supportFTBPick : list[i].supportComboPick) == 5))
+                    {
+                        ComboBonuses temp = list[i];
+                        list.RemoveAt(i);
+                        list.Add(temp);
+                        hasSeen.Add(list[i].mainPick.Details.ID);
+                    }
+                }
+
+                hasSeen = new List<TerritoryIDType>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (!hasSeen.Contains(list[i].mainPick.Details.ID) && list[i].adjacentPickTerritories.Count > 2)
+                    {
+                        ComboBonuses temp = list[i];
+                        list.RemoveAt(i);
+                        list.Add(temp);
+                        hasSeen.Add(list[i].mainPick.Details.ID);
+                    }
+                }
+            }
+        }
+
+        private int GetSmallestBonus(List<BotTerritory> list)
+        {
+            int smallestBonus = 10;
+            foreach (BotTerritory terr in list)
+            {
+                smallestBonus = terr.Bonuses[0].Amount < smallestBonus ? terr.Bonuses[0].Amount : smallestBonus;
+            }
+            return smallestBonus;
         }
 
         /// <summary>
