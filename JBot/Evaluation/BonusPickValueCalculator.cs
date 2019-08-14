@@ -146,7 +146,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             foreach (var adjTerr in adjBonusTerr.Neighbors)
                             {
-                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0 && !IsInefficientBonus(adjTerr.Bonuses[0]) && IsWastelandedBonus(adjTerr.Bonuses[0]))
+                                if (!ContainsTerritory(bonus, adjTerr) && adjTerr.Armies.NumArmies == 0 && !IsInefficientBonus(adjTerr.Bonuses[0]) && !IsWastelandedBonus(adjTerr.Bonuses[0]))
                                 {
                                     return true;
                                 }

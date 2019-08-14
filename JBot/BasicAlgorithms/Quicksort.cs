@@ -14,9 +14,9 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
 
         public static void QuicksortList(ref List<BotTerritory> list, int from, int to, ValueFunction vF)
         {
-            if (to - from < 2)
+            if (to - from < 2 || list == null)
             {
-
+                return;
             }
             int pointer = from;
             for (int i = from + 1; i < to; i++)

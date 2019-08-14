@@ -35,7 +35,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             isFTB = IsFirstTurnBonus(mainBonus);
             RemoveDuplicates(ref supportFTBPick);
             isCounterable = adjacentPickTerritories.Count > 2 ? true : false;
-            isCombo = (isFTB || supportComboPick.Count >= 1) && !IsManyTurnBonus();
+            isCombo = !isFTB && supportComboPick.Count > 0 && !IsManyTurnBonus();
             isEfficient = !IsInefficientBonus(mainBonus) && IsEfficientCombo();
             ReorderPicks();
             RemoveDuplicates(ref adjacentPickTerritories);
@@ -46,8 +46,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             RemoveDuplicates(ref adjacentPickTerritories);
             RemoveDuplicates(ref supportFTBPick);
             RemoveDuplicates(ref supportComboPick);
-            BotTerritory[] picks = new BotTerritory[adjacentPickTerritories.Count - 1];
-            Array.Copy(adjacentPickTerritories.ToArray(), 1, picks, 0, picks.Length);
+            List<BotTerritory> picks = new List<BotTerritory>();
 
             if (isFTB)
             {
@@ -55,7 +54,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 {
                     for (int i = 0; i < supportFTBPick.Count; i++)
                     {
-                        picks[i] = supportFTBPick[i];
+                        picks.Add(supportFTBPick[i]);
                     }
                 }
             } else if (isCombo)
@@ -64,7 +63,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
                 {
                     for (int i = 0; i < supportComboPick.Count; i++)
                     {
-                        picks[i] = supportComboPick[i];
+                        picks.Add(supportComboPick[i]);
                     }
                 }
             }
@@ -231,7 +230,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
             for (int i = 0; i < supportFTBPick.Count; i++)
             {
-                if (IsInefficientBonus(supportFTBPick[i].Bonuses[0]) || IsWastelandedBonus(supportFTBPick[i].Bonuses[0]))
+                if (IsWastelandedBonus(supportComboPick[i].Bonuses[0]) || IsInefficientBonus(supportComboPick[i].Bonuses[0]) || supportComboPick[i].Bonuses[0].Details.Name.Equals("Caucasus") || supportComboPick[i].Bonuses[0].Details.Name.Equals("West China"))
                 {
                     supportFTBPick.RemoveAt(i--);
                 }
@@ -310,6 +309,14 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             {
                 supportComboPick = new List<BotTerritory>(adjacentPickTerritories);
                 supportComboPick.RemoveAt(0);
+
+                for (int i = 0; i < supportComboPick.Count; i++)
+                {
+                    if (IsWastelandedBonus(supportComboPick[i].Bonuses[0]) || IsInefficientBonus(supportComboPick[i].Bonuses[0]) || supportComboPick[i].Bonuses[0].Details.Name.Equals("Caucasus") || supportComboPick[i].Bonuses[0].Details.Name.Equals("West China"))
+                    {
+                        supportComboPick.RemoveAt(i--);
+                    }
+                }
                 return;
             }
 
@@ -349,7 +356,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             }
             for (int i = 0; i < supportComboPick.Count; i++)
             {
-                if (IsInefficientBonus(supportComboPick[i].Bonuses[0]) || IsWastelandedBonus(supportComboPick[i].Bonuses[0]))
+                if (IsWastelandedBonus(supportComboPick[i].Bonuses[0]) || IsInefficientBonus(supportComboPick[i].Bonuses[0]) || supportComboPick[i].Bonuses[0].Details.Name.Equals("Caucasus") || supportComboPick[i].Bonuses[0].Details.Name.Equals("West China"))
                 {
                     supportComboPick.RemoveAt(i--);
                 }
