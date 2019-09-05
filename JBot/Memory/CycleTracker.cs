@@ -18,24 +18,27 @@ namespace WarLight.Shared.AI.JBot.Memory
 
         public static void SetCycle(bool isOdd)
         {
-            isOddTurnCycle = isOdd;
-            hasFoundCycle = true;
+            if (!hasFoundCycle)
+            {
+                isOddTurnCycle = isOdd;
+                hasFoundCycle = true;
+            }
         }
 
         /// <summary>
         /// Determines the cycle order by looking at given picks. Possible choices are:
-        /// FIRST TURN PRIORITY
+        /// Odd TURN PRIORITY
             //126
             //136
             //234
             //235
             //236
 
-            //SECOND TURN PRIORITY
+        /// Even TURN PRIORITY
             //135
             //145
 
-            //INDETERMINABLE PRIORITY
+        /// INDETERMINABLE PRIORITY
             //123
             //124
             //125
@@ -51,6 +54,14 @@ namespace WarLight.Shared.AI.JBot.Memory
                 SetCycle(true);
             } else if (chosenPicks[0] == givenPicks[0] && (chosenPicks[2] == givenPicks[1] || chosenPicks[3] == givenPicks[1])) {
                 SetCycle(false);
+            }
+        }
+
+        public static void SetCycleOrders(List<GameOrderDeploy> deployments, List<GameOrderAttackTransfer> attackTransfers, PlayerIDType meID, int NumberOfTurns)
+        {
+            if (deployments[0].PlayerID != meID || attackTransfers[0].PlayerID != meID)
+            {
+                Memory.CycleTracker.SetCycle(NumberOfTurns % 2 == 1);
             }
         }
     }

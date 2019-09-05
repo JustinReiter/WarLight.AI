@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace WarLight.Shared.AI.JBot.Bot
 {
@@ -26,7 +27,10 @@ namespace WarLight.Shared.AI.JBot.Bot
             AILog.Log("DeploymentHistory", "VisibleDeployment for " + opponentID + ": " + opponentDeployment);
             OpponentDeployments[opponentID] = opponentDeployment;
             Memory.DeploymentTracker.SetDeploys(opponentID, opponentDeployment, BotState.NumberOfTurns - 1);
+
+            List<GameOrderDeploy> deployments = BotState.PrevTurn.OfType<GameOrderDeploy>().ToList();
+            List<GameOrderAttackTransfer> attackTransfers = BotState.PrevTurn.OfType<GameOrderAttackTransfer>().ToList();
+            Memory.CycleTracker.SetCycleOrders(deployments, attackTransfers, BotState.Me.ID, BotState.NumberOfTurns);
         }
-        
     }
 }
