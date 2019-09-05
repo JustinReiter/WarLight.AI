@@ -8,6 +8,22 @@ namespace WarLight.Shared.AI.JBot.Tasks
 {
     public static class PlayCardsTask
     {
+
+        private static bool hasSeenOpponent;
+
+        private static void HasSeenOpponent(BotMain state)
+        {
+            foreach (BotTerritory terr in state.VisibleMap.Territories.Values)
+            {
+                if (state.IsOpponent(terr.OwnerPlayerID))
+                {
+                    hasSeenOpponent = true;
+                    return;
+                }
+            }
+            hasSeenOpponent = false;
+        }
+
         public static void PlayCardsBeginTurn(BotMain state, Moves moves)
         {
             //If there are any humans on our team that have yet to take their turn, do not play cards.
@@ -16,12 +32,16 @@ namespace WarLight.Shared.AI.JBot.Tasks
                 return;
             }
 
+            HasSeenOpponent(state);
             foreach (var reinforcementCard in state.CardsHandler.GetCards(CardTypes.Reinforcement))
             {
-                var numArmies = reinforcementCard.As<ReinforcementCard>().Armies;
-                AILog.Log("PlayCardsTask", "Playing reinforcement card " + reinforcementCard.CardInstanceId + " for " + numArmies + " armies");
-                moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
-                state.MyIncome.FreeArmies += numArmies;
+                if (hasSeenOpponent)
+                {
+                    var numArmies = reinforcementCard.As<ReinforcementCard>().Armies;
+                    AILog.Log("PlayCardsTask", "Playing reinforcement card " + reinforcementCard.CardInstanceId + " for " + numArmies + " armies");
+                    moves.AddOrder(new BotOrderGeneric(GameOrderPlayCardReinforcement.Create(reinforcementCard.CardInstanceId, state.Me.ID)));
+                    state.MyIncome.FreeArmies += numArmies;
+                }
             }
         }
 
