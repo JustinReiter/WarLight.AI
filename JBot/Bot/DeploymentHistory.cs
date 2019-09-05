@@ -25,6 +25,7 @@ namespace WarLight.Shared.AI.JBot.Bot
         {
             AILog.Log("DeploymentHistory", "VisibleDeployment for " + opponentID + ": " + opponentDeployment);
             OpponentDeployments[opponentID] = opponentDeployment;
+            Memory.DeploymentTracker.SetDeploys(opponentID, opponentDeployment, BotState.NumberOfTurns - 1);
         }
         
     }

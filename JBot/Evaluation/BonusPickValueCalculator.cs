@@ -31,7 +31,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         /// <param name="bonus"></param>
         /// <param name="useNeighborBonusFactor"></param>
         /// <returns></returns>
-        public double GetExpansionValue(BotBonus bonus, Boolean useNeighborBonusFactor)
+        public double GetExpansionValue(BotBonus bonus)
         {
             double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
             Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);

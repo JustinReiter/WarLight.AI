@@ -183,7 +183,7 @@ namespace WarLight.Shared.AI.JBot.Bot
         public List<GameOrder> GetOrders()
         {
             Debug.Debug.PrintDebugOutputBeginTurn(this);
-
+            Memory.DeploymentTracker.AddTurn(NumberOfTurns - 1);
             if (NumberOfTurns > 0)
             {
                 LastVisibleMapUpdater.StoreOpponentDeployment();
@@ -214,6 +214,7 @@ namespace WarLight.Shared.AI.JBot.Bot
             Debug.Debug.PrintTerritoryValues(VisibleMap, this);
             Debug.Debug.PrintTerritories(VisibleMap, this);
             //LastVisibleMap = VisibleMap.GetMapCopy();
+            Debug.Debug.PrintFinalOrders(MovesCalculator.CalculatedMoves);
             return this.MovesCalculator.CalculatedMoves.Convert();
         }
 
