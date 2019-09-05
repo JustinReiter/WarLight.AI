@@ -65,6 +65,7 @@ namespace WarLight.Shared.AI.JBot.Memory
         {
             SetChosenPickList(bot.GetPicks());
             SetEnemyPickList(Except(_picks, _chosenPicks));
+            Memory.CycleTracker.SetCyclePicks(_picks, _chosenPicks);
         }
 
         private static List<TerritoryIDType> Except(List<TerritoryIDType> main, List<TerritoryIDType> secondary)
