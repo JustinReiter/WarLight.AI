@@ -92,6 +92,7 @@
     <Compile Include="JBot\BasicAlgorithms\Quicksort.cs" />
     <Compile Include="JBot\Evaluation\BonusPickValueCalculator.cs" />
     <Compile Include="JBot\GameObjects\ComboBonuses.cs" />
+    <Compile Include="JBot\Memory\PickTracker.cs" />
     <Compile Include="Prod\BonusPath.cs" />
     <Compile Include="Prod\BotMain.cs" />
     <Compile Include="Prod\MakeOrders\DefendAttack.cs" />

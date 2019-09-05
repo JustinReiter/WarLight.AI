@@ -144,6 +144,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 AILog.Log("DEBUG", map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
             }
+
+            Memory.PickTracker.SetPickList(picks);
             return picks;
         }
 
