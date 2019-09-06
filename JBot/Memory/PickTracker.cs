@@ -51,9 +51,14 @@ namespace WarLight.Shared.AI.JBot.Memory
             return _enemyPicks;
         }
 
-        public static void SetEnemyPickList(List<TerritoryIDType> chosenPicks)
+        public static void SetEnemyPickList(List<TerritoryIDType> enemyPicks)
         {
-            _chosenPicks = chosenPicks;
+            _enemyPicks = enemyPicks;
+        }
+
+        public static int GetEnemyPickCount()
+        {
+            return _enemyPicks.Count;
         }
 
         public  static int GetEnemyListCount()
@@ -64,18 +69,25 @@ namespace WarLight.Shared.AI.JBot.Memory
         public static void SetConfirmedPicks(BotMain bot)
         {
             SetChosenPickList(bot.GetPicks());
-            SetEnemyPickList(Except(_picks, _chosenPicks));
+            SetEnemyPickList(Except(_picks, _chosenPicks, bot));
             Memory.CycleTracker.SetCyclePicks(_picks, _chosenPicks);
         }
 
-        private static List<TerritoryIDType> Except(List<TerritoryIDType> main, List<TerritoryIDType> secondary)
+        private static List<TerritoryIDType> Except(List<TerritoryIDType> main, List<TerritoryIDType> secondary, BotMain bot)
         {
             List<TerritoryIDType> list = new List<TerritoryIDType>();
+            int botPicksEncountered = 0;
             foreach (TerritoryIDType terr in secondary)
             {
-                if (!main.Contains(terr))
+
+                if (botPicksEncountered < bot.Settings.LimitDistributionTerritories) {
+                    break;
+                } else if (!main.Contains(terr))
                 {
                     list.Add(terr);
+                } else
+                {
+                    botPicksEncountered++;
                 }
             }
             return list;
