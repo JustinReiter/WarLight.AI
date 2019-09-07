@@ -10,9 +10,6 @@ namespace WarLight.Shared.AI.JBot.Memory
     static class DeploymentTracker
     {
         private static List<Dictionary<PlayerIDType, int>> deploysByTurn = new List<Dictionary<PlayerIDType, int>>();
-        
-
-
 
         public static int GetDeploys(PlayerIDType playerId, int turn)
         {
@@ -40,7 +37,7 @@ namespace WarLight.Shared.AI.JBot.Memory
             }
         }
 
-        private static int GetTurns()
+        public static int GetTurns()
         {
             return deploysByTurn.Count;
         }

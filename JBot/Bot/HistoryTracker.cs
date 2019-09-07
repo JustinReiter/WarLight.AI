@@ -22,6 +22,11 @@ namespace WarLight.Shared.AI.JBot.Bot
             return BotState.PrevTurn.Where(o => o.PlayerID == opponentID).OfType<GameOrderDeploy>().Sum(o => o.NumArmies);
         }
 
+        public void ReadPlayerDeployment()
+        {
+            DeploymentHistory.Update(BotState.Me.ID, BotState.PrevTurn.Where(o => o.PlayerID == BotState.Me.ID).OfType<GameOrderDeploy>().Sum(o => o.NumArmies));
+        }
+
         public void ReadOpponentDeployment()
         {
             foreach(var opponent in BotState.Opponents)

@@ -45,6 +45,18 @@ namespace WarLight.Shared.AI.JBot.Tasks
             }
         }
 
+        //public static void PlayBlockadeCard(BotMain state, Moves moves)
+        //{
+        //    // Plays blockade card in certain situations to prevent further loss of inc, or to prevent enemy from getting inc
+        //    if (state.CardsHandler.GetCards(CardTypes.Blockade).Count != 0)
+        //    {
+        //        if (Memory.DeploymentTracker.GetDeploys(state.Me.ID, state.NumberOfTurns-1) > Memory.DeploymentTracker.GetDeploys(state.Me.ID, state.NumberOfTurns))
+        //        {
+        //            int bonusLost 
+        //        }
+        //    }
+        //}
+
         public static void DiscardCardsEndTurn(BotMain state, Moves moves)
         {
 

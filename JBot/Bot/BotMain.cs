@@ -194,6 +194,8 @@ namespace WarLight.Shared.AI.JBot.Bot
             StatelessFogRemover.RemoveFog();
             //FogRemover.RemoveFog();
             this.HistoryTracker.ReadOpponentDeployment();
+            this.HistoryTracker.ReadPlayerDeployment();
+            Memory.BonusTracker.UpdateTakenBonuses(this);
             this.WorkingMap = this.VisibleMap.GetMapCopy();
             DistanceCalculator.CalculateDistanceToBorder(this, this.VisibleMap, this.WorkingMap);
             DistanceCalculator.CalculateDirectDistanceToOpponentTerritories(this.VisibleMap, this.VisibleMap);
