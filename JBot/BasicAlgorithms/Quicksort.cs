@@ -26,15 +26,34 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
                     Swap(i, ++pointer, ref list);
                 }
             }
-            Swap(0, pointer, ref list);
+            Swap(from, pointer, ref list);
             QuicksortList(ref list, from, pointer, vF);
             QuicksortList(ref list, pointer + 1, to, vF);
         }
 
-
-        private static void Swap(int one, int two, ref List<BotTerritory> list)
+        public static void QuicksortPath(ref PathVector vector, int from, int to)
         {
-            BotTerritory temp = list[one];
+            if (from - to < 2 || vector == null)
+            {
+                return;
+            }
+            int pointer = from;
+            for (int i = from + 1; i < to; i++)
+            {
+                if (vector.nodes[from].minDistance > vector.nodes[i].minDistance)
+                {
+                    Swap(++pointer, i, ref vector.nodes);
+                }
+            }
+
+            Swap(pointer, from, ref vector.nodes);
+            QuicksortPath(ref vector, from, pointer);
+            QuicksortPath(ref vector, pointer +1, to);
+        }
+
+        private static void Swap<T>(int one, int two, ref List<T> list)
+        {
+            T temp = list[one];
             list[one] = list[two];
             list[two] = temp;
         }
