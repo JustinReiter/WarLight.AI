@@ -7,7 +7,7 @@ using WarLight.Shared.AI.JBot.Bot;
 
 namespace WarLight.Shared.AI.JBot.BasicAlgorithms
 {
-    class PathNode
+    public class PathNode
     {
 
         public TerritoryIDType territory;
@@ -29,6 +29,21 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
             {
                 adjacent.Add(adjTerr.ID);
             }
+        }
+
+        public int GetSteps()
+        {
+            return minPath.Count;
+        }
+
+        public string FormatPathOutput(BotMap map)
+        {
+            string formatted = map.Territories[territory].Details.Name;
+            foreach (TerritoryIDType terrId in minPath)
+            {
+                formatted += " => " + map.Territories[terrId].Details.Name;
+            }
+            return formatted;
         }
     }
 }

@@ -190,6 +190,11 @@ namespace WarLight.Shared.AI.JBot.Bot
             } else if (NumberOfTurns == 0)
             {
                 Memory.PickTracker.SetConfirmedPicks(this);
+                foreach (TerritoryIDType terr in Memory.PickTracker.GetEnemyPickList())
+                {
+                    PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(this, this.VisibleMap.Territories[Memory.PickTracker.GetChosenPickList()[0]], this.VisibleMap.Territories[terr]);
+                    Debug.Debug.PrintPath(this.VisibleMap, final);
+                }
             }
             StatelessFogRemover.RemoveFog();
             //FogRemover.RemoveFog();

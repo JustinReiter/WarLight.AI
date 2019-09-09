@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WarLight.Shared.AI.JBot.BasicAlgorithms;
 using WarLight.Shared.AI.JBot.Bot;
 using WarLight.Shared.AI.JBot.Move;
 
@@ -79,6 +80,13 @@ namespace WarLight.Shared.AI.JBot.Debug
                     AILog.Log("FINAL ATTACK/TRANSFERL: ", "Unexpected Move");
                 }
             }
+        }
+
+        public static void PrintPath(BotMap map, PathNode node)
+        {
+            AILog.Log("PATH: ", "Start:\t" + map.Territories[node.minPath.First()].Details.Name);
+            AILog.Log("PATH: ", "Finish:\t" + map.Territories[node.territory].Details.Name);
+            AILog.Log("PATH: ", "\t" + node.FormatPathOutput(map));
         }
 
         public static void PrintGuessedDeployment(BotMap map, BotMain BotState)
