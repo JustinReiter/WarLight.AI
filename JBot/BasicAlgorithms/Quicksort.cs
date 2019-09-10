@@ -33,7 +33,7 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
 
         public static void QuicksortPath(ref PathVector vector, int from, int to)
         {
-            if (from - to < 2 || vector == null)
+            if (to - from < 2 || vector == null)
             {
                 return;
             }

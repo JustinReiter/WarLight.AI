@@ -230,7 +230,7 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
             for (int i = 0; i < supportFTBPick.Count; i++)
             {
-                if (IsWastelandedBonus(supportComboPick[i].Bonuses[0]) || IsInefficientBonus(supportComboPick[i].Bonuses[0]) || supportComboPick[i].Bonuses[0].Details.Name.Equals("Caucasus") || supportComboPick[i].Bonuses[0].Details.Name.Equals("West China"))
+                if (IsWastelandedBonus(supportFTBPick[i].Bonuses[0]) || IsInefficientBonus(supportFTBPick[i].Bonuses[0]) || supportFTBPick[i].Bonuses[0].Details.Name.Equals("Caucasus") || supportFTBPick[i].Bonuses[0].Details.Name.Equals("West China"))
                 {
                     supportFTBPick.RemoveAt(i--);
                 }

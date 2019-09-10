@@ -19,6 +19,7 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
         {
             territory = terr.ID;
             minPath = new List<TerritoryIDType>();
+            adjacent = new List<TerritoryIDType>();
             minDistance = int.MaxValue;
             SetAdjacentTerrId(terr);
         }
@@ -38,11 +39,12 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
 
         public string FormatPathOutput(BotMap map)
         {
-            string formatted = map.Territories[territory].Details.Name;
+            string formatted = "";
             foreach (TerritoryIDType terrId in minPath)
             {
-                formatted += " => " + map.Territories[terrId].Details.Name;
+                formatted += map.Territories[terrId].Details.Name + " => ";
             }
+            formatted += map.Territories[territory].Details.Name;
             return formatted;
         }
     }

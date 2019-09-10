@@ -31,8 +31,9 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
             {
                 if (nodes[i].territory == terrId)
                 {
+                    PathNode removedNode = nodes[i];
                     nodes.RemoveAt(i);
-                    return nodes[i];
+                    return removedNode;
                 }
             }
             return null;

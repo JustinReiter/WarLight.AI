@@ -146,6 +146,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
 
             Memory.PickTracker.SetPickList(picks);
+            BotMap storedMap = BotState.VisibleMap.GetMapCopy();
+            Memory.PickTracker.pickMap = storedMap;
             return picks;
         }
 

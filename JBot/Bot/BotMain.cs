@@ -192,7 +192,7 @@ namespace WarLight.Shared.AI.JBot.Bot
                 Memory.PickTracker.SetConfirmedPicks(this);
                 foreach (TerritoryIDType terr in Memory.PickTracker.GetEnemyPickList())
                 {
-                    PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(this, this.VisibleMap.Territories[Memory.PickTracker.GetChosenPickList()[0]], this.VisibleMap.Territories[terr]);
+                    PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(Memory.PickTracker.pickMap, this.VisibleMap.Territories[Memory.PickTracker.GetChosenPickList()[0]], this.VisibleMap.Territories[terr]);
                     Debug.Debug.PrintPath(this.VisibleMap, final);
                 }
             }

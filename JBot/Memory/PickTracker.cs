@@ -12,6 +12,7 @@ namespace WarLight.Shared.AI.JBot.Memory
         private static List<TerritoryIDType> _picks = new List<TerritoryIDType>();
         private static List<TerritoryIDType> _chosenPicks = new List<TerritoryIDType>();
         private static List<TerritoryIDType> _enemyPicks = new List<TerritoryIDType>();
+        public static BotMap pickMap;
 
         public static TerritoryIDType GetPick(int pickSlot)
         {
@@ -68,8 +69,33 @@ namespace WarLight.Shared.AI.JBot.Memory
 
         public static void SetConfirmedPicks(BotMain bot)
         {
-            SetChosenPickList(bot.GetPicks());
-            SetEnemyPickList(Except(_picks, _chosenPicks, bot));
+            List<TerritoryIDType> chosenPicks = new List<TerritoryIDType>();
+            foreach (BotTerritory terr in bot.VisibleMap.Territories.Values)
+            {
+                if (terr.OwnerPlayerID == bot.Me.ID)
+                {
+                    chosenPicks.Add(terr.ID);
+                }
+            }
+            SetChosenPickList(chosenPicks);
+
+            List<TerritoryIDType> enemyPicks = new List<TerritoryIDType>();
+            int chosenFound = 0;
+            foreach (TerritoryIDType terrId in _picks)
+            {
+                if (chosenFound > 2)
+                {
+                    break;
+                }
+                if (_chosenPicks.Contains(terrId))
+                {
+                    chosenFound++;
+                } else
+                {
+                    enemyPicks.Add(terrId);
+                }
+            }
+            SetEnemyPickList(enemyPicks);
             Memory.CycleTracker.SetCyclePicks(_picks, _chosenPicks);
         }
 
