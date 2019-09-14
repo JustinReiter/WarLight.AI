@@ -48,7 +48,29 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
 
             Swap(pointer, from, ref vector.nodes);
             QuicksortPath(ref vector, from, pointer);
-            QuicksortPath(ref vector, pointer +1, to);
+            QuicksortPath(ref vector, pointer + 1, to);
+        }
+
+        public static void QuicksortFastestPath(ref List<PathNode> nodes, int from, int to)
+        {
+            if (to - from < 2 || nodes == null)
+            {
+                return;
+            }
+
+            int pointer = from;
+            for (int i = from + 1; i < to; i++)
+            {
+                if (nodes[pointer].GetSteps() < nodes[i].GetSteps())
+                {
+                    Swap(++pointer, i, ref nodes);
+                }
+            }
+
+            Swap(from, pointer, ref nodes);
+            QuicksortFastestPath(ref nodes, from, pointer);
+            QuicksortFastestPath(ref nodes, pointer + 1, to);
+
         }
 
         private static void Swap<T>(int one, int two, ref List<T> list)

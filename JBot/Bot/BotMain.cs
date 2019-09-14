@@ -189,13 +189,33 @@ namespace WarLight.Shared.AI.JBot.Bot
                 LastVisibleMapUpdater.StoreOpponentDeployment();
             } else if (NumberOfTurns == 0)
             {
+                AILog.Log("PATH:", "Start of path to enemy");
                 Memory.PickTracker.SetConfirmedPicks(this);
                 foreach (TerritoryIDType chosenTerr in Memory.PickTracker.GetChosenPickList())
                 {
                     foreach (TerritoryIDType enemyTerr in Memory.PickTracker.GetEnemyPickList())
                     {
                         PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(Memory.PickTracker.pickMap, this.VisibleMap.Territories[chosenTerr], this.VisibleMap.Territories[enemyTerr]);
+                        Memory.PathTracker.AddPath(final);
                         Debug.Debug.PrintPath(this.VisibleMap, final);
+                    }
+                }
+
+                if (Memory.PickTracker.GetEnemyPickCount() > 1)
+                {
+                    AILog.Log("PATH:", "Start of enemy region");
+                    foreach (TerritoryIDType firstEnemyTerr in Memory.PickTracker.GetEnemyPickList())
+                    {
+                        foreach (TerritoryIDType secondEnemyTerr in Memory.PickTracker.GetEnemyPickList())
+                        {
+                            if (firstEnemyTerr == secondEnemyTerr)
+                            {
+                                continue;
+                            }
+                            PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(Memory.PickTracker.pickMap, this.VisibleMap.Territories[firstEnemyTerr], this.VisibleMap.Territories[secondEnemyTerr]);
+                            Memory.PathTracker.AddEnemyVicinity(final);
+                            Debug.Debug.PrintPath(this.VisibleMap, final);
+                        }
                     }
                 }
             }
