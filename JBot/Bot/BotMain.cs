@@ -47,6 +47,7 @@ namespace WarLight.Shared.AI.JBot.Bot
         public BonusValueCalculator BonusValueCalculator;
         public BonusExpansionValueCalculator BonusExpansionValueCalculator;
         public BonusPickValueCalculator BonusPickValueCalculator;
+        public BonusRegionEvaluator BonusRegionEvaluator;
 
 
         public DefendTerritoryTask DefendTerritoryTask;
@@ -78,6 +79,7 @@ namespace WarLight.Shared.AI.JBot.Bot
             this.ExpansionTask = new ExpansionTask(this);
             this.BonusExpansionValueCalculator = new BonusExpansionValueCalculator(this);
             this.BonusPickValueCalculator = new BonusPickValueCalculator(this);
+            this.BonusRegionEvaluator = new BonusRegionEvaluator(this);
             this.DefendTerritoryTask = new DefendTerritoryTask(this);
             this.DefendTerritoriesTask = new DefendTerritoriesTask(this);
             this.MapUpdater = new MapUpdater(this);

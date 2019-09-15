@@ -94,6 +94,7 @@
     <Compile Include="JBot\BasicAlgorithms\PathVector.cs" />
     <Compile Include="JBot\BasicAlgorithms\Quicksort.cs" />
     <Compile Include="JBot\Evaluation\BonusPickValueCalculator.cs" />
+    <Compile Include="JBot\Evaluation\BonusRegionEvaluator.cs" />
     <Compile Include="JBot\GameObjects\ComboBonuses.cs" />
     <Compile Include="JBot\GameObjects\GroupedIncome.cs" />
     <Compile Include="JBot\Memory\CycleTracker.cs" />

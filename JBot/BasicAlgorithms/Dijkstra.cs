@@ -37,6 +37,9 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
                     if (numArmies == 0)
                     {
                         numArmies = 4;
+                    } else if (numArmies == 10)
+                    {
+                        numArmies = 20;
                     }
                     if (unseenTerr.Contains(terrId) && unseenTerr.GetNode(terrId).minDistance > (pointer.minDistance + numArmies))
                     {
