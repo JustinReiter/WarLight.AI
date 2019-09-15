@@ -32,6 +32,8 @@ namespace WarLight.Shared.AI.JBot.Bot
         public int ExpansionValueCategory = 0;
         public int DefenseValue = 0;
         public double ExpansionValue = 0;
+        public double RegionExpansionValue = 0;
+        public double RegionSafetyValue = 0;
 
         public BotBonus(BotMap parent, BonusIDType id)
         {
@@ -62,6 +64,12 @@ namespace WarLight.Shared.AI.JBot.Bot
         {
             this.ExpansionValue = BotState.BonusPickValueCalculator.GetExpansionValue(this);
 
+        }
+
+        public void SetMyRegionValue()
+        {
+            this.RegionExpansionValue = BotState.BonusRegionEvaluator
+            this.RegionSafetyValue = BotState.BonusRegionEvaluator
         }
 
 

@@ -12,17 +12,20 @@ namespace WarLight.Shared.AI.JBot.GameObjects
 
         List<BonusIDType> _bonuses;
         List<PathNode> _paths;
+        int _income;
 
 
         public GroupedIncome()
         {
             _bonuses = new List<BonusIDType>();
             _paths = new List<PathNode>();
+            _income = 0;
         }
 
-        public void AddBonus(BonusIDType bonus)
+        public void AddBonus(BonusIDType bonus, int armies)
         {
             _bonuses.Add(bonus);
+            _income += armies;
         }
 
         public List<BonusIDType> GetBonuses()
