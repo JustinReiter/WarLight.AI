@@ -22,6 +22,11 @@ namespace WarLight.Shared.AI.JBot.GameObjects
             _income = 0;
         }
 
+        public void SetBonuses(List<BonusIDType> bonuses)
+        {
+            _bonuses = new List<BonusIDType>(bonuses);
+        }
+
         public void AddBonus(BonusIDType bonus, int armies)
         {
             _bonuses.Add(bonus);

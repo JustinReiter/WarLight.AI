@@ -216,6 +216,10 @@ namespace WarLight.Shared.AI.JBot.Bot
                             }
                             PathNode final = BasicAlgorithms.Dijkstra.ShortestPath(Memory.PickTracker.pickMap, this.VisibleMap.Territories[firstEnemyTerr], this.VisibleMap.Territories[secondEnemyTerr]);
                             Memory.PathTracker.AddEnemyVicinity(final);
+                            if (this.BonusRegionEvaluator.IsEnemyMainRegion(final))
+                            {
+                                Memory.RegionTracker.SetEnemyRegion(this.BonusRegionEvaluator.GetEnemyMainRegion(final));
+                            }
                             Debug.Debug.PrintPath(this.VisibleMap, final);
                         }
                     }

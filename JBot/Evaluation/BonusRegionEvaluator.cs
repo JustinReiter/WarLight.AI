@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WarLight.Shared.AI.JBot.BasicAlgorithms;
 using WarLight.Shared.AI.JBot.Bot;
 
 namespace WarLight.Shared.AI.JBot.Evaluation
@@ -76,6 +77,37 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         public bool IsInefficient(BotBonus bonus)
         {
             return bonus.Territories.Count > bonus.Amount + 1 ? true : false;
+        }
+
+        /// <summary>
+        /// Returns true if the enemy picks are either (one-off) adjacent, or area "close" path-wise.
+        /// </summary>
+        /// <param name="node">Node with Source/Dest as enemy picks</param>
+        /// <returns></returns>
+        // TODO Refine arbitrary numbers
+        public bool IsEnemyMainRegion(PathNode node)
+        {
+            int count = GetEnemyMainRegion(node).Count;
+            return count > 0 && (count < 4 || node.minPath.Count < 6);
+        }
+
+        public List<BonusIDType> GetEnemyMainRegion(PathNode node)
+        {
+            List<BonusIDType> uniqueBonuses = new List<BonusIDType>();
+            foreach (TerritoryIDType terrId in node.minPath)
+            {
+                BotBonus bonus = BotState.VisibleMap.Territories[terrId].Bonuses[0];
+                if (!uniqueBonuses.Contains(bonus.ID) || !IsWasteland(bonus) || !IsInefficient(bonus))
+                {
+                    uniqueBonuses.Add(bonus.ID);
+                }
+                else if (IsWasteland(bonus) || IsInefficient(bonus))
+                {
+                    uniqueBonuses.Clear();
+                    return uniqueBonuses;
+                }
+            }
+            return uniqueBonuses;
         }
     }
 }
