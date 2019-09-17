@@ -8,8 +8,8 @@ namespace WarLight.Shared.AI.JBot.Memory
 {
     static class CycleTracker
     {
-        private static bool hasFoundCycle = false;
-        private static bool isOddTurnCycle;
+        public static bool hasFoundCycle = false;
+        public static bool isOddTurnCycle;
 
         public static bool IsCycleFound()
         {

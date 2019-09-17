@@ -89,6 +89,49 @@ namespace WarLight.Shared.AI.JBot.Debug
             AILog.Log("PATH: ", "\t" + node.FormatPathOutput(map));
         }
 
+        public static void PrintAllMemory(BotMap map)
+        {
+
+            AILog.Log("Cycle", "START of cycle tracker");
+            if (Memory.CycleTracker.hasFoundCycle)
+            {
+                AILog.Log("Cycle", "Odd Turn Cycle: " + Memory.CycleTracker.isOddTurnCycle);
+            }
+
+            AILog.Log("Deployment", "START of deployment tracker");
+            for (int i = 0; i < Memory.DeploymentTracker.deploysByTurn.Count; i++) {
+                AILog.Log("Deployment", "Turn: " + i);
+                foreach (PlayerIDType playerId in Memory.DeploymentTracker.deploysByTurn[i].Keys)
+                {
+                    AILog.Log("Deployment", playerId + ": " + Memory.DeploymentTracker.deploysByTurn[i][playerId]);
+                }
+            }
+
+            AILog.Log("Path", "START of path tracker");
+            foreach (PathNode node in Memory.PathTracker._paths)
+            {
+                AILog.Log("Path", "Start: " + map.Territories[node.minPath[0]].Details.Name + "; End: " + map.Territories[node.territory].Details.Name);
+                AILog.Log("\tPath", node.FormatPathOutput(map));
+            }
+
+            AILog.Log("Pick", "START of pick tracker");
+            for (int i = 0; i < Memory.PickTracker.GetChosenPickList().Count; i++)
+            {
+                AILog.Log("Pick", "Bot Pick #" + i + ": " + map.Territories[Memory.PickTracker.GetChosenPickList()[i]].Details.Name);
+            }
+            for (int i = 0; i < Memory.PickTracker.GetEnemyPickList().Count; i++)
+            {
+                AILog.Log("Pick", "Enemy Pick #" + i + ": " + map.Territories[Memory.PickTracker.GetEnemyPickList()[i]].Details.Name);
+            }
+
+            AILog.Log("Region", "START of region tracker");
+            for (int i = 0; i < Memory.RegionTracker.enemyRegion.Count; i++)
+            {
+                AILog.Log("Region", "Region #" + i + ":\n" + Memory.RegionTracker.enemyRegion[i].FormatOutput(map));
+
+            }
+        }
+
         public static void PrintGuessedDeployment(BotMap map, BotMain BotState)
         {
             //AILog.Log("Debug", "Guessed deployment:");

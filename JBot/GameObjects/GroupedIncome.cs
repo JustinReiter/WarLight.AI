@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WarLight.Shared.AI.JBot.BasicAlgorithms;
+using WarLight.Shared.AI.JBot.Bot;
 
 namespace WarLight.Shared.AI.JBot.GameObjects
 {
@@ -47,6 +48,16 @@ namespace WarLight.Shared.AI.JBot.GameObjects
         public List<PathNode> GetPaths()
         {
             return _paths;
+        }
+
+        public String FormatOutput(BotMap map)
+        {
+            String output = "";
+            foreach (BonusIDType bonusId in _bonuses)
+            {
+                output += "\t" + map.Bonuses[bonusId].Details.Name + "\n";
+            }
+            return output;
         }
     }
 }

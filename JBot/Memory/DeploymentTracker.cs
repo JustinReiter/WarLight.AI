@@ -9,7 +9,7 @@ namespace WarLight.Shared.AI.JBot.Memory
 {
     static class DeploymentTracker
     {
-        private static List<Dictionary<PlayerIDType, int>> deploysByTurn = new List<Dictionary<PlayerIDType, int>>();
+        public static List<Dictionary<PlayerIDType, int>> deploysByTurn = new List<Dictionary<PlayerIDType, int>>();
         
 
 
