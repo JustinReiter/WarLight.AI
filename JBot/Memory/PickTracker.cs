@@ -96,7 +96,10 @@ namespace WarLight.Shared.AI.JBot.Memory
                 }
             }
             SetEnemyPickList(enemyPicks);
-            Memory.CycleTracker.SetCyclePicks(_picks, _chosenPicks);
+            if (_picks.Count != 0)
+            {
+                Memory.CycleTracker.SetCyclePicks(_picks, _chosenPicks);
+            }
         }
 
         private static List<TerritoryIDType> Except(List<TerritoryIDType> main, List<TerritoryIDType> secondary, BotMain bot)
