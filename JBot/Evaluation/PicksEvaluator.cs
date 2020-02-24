@@ -69,7 +69,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             foreach (TerritoryIDType terrID in weights.Keys)
             {
-                AILog.Log("PICK VALUES", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
+                AILog.Log("Pick Values", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
             }
 
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
@@ -93,56 +93,57 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             ReorderCombosByNumberOfTerritories(ref comboList);
 
 
-            AILog.Log("OUTPUT", "\nNumber of FTBs: " + firstTurnBonusList.Count + "\nNumber of Combos: " + comboList.Count);
-            AILog.Log("\nDEBUG", "BEFORE FTBS AND COMBOS");
+            AILog.Log("Picks", "Number of FTBs: " + firstTurnBonusList.Count);
+            AILog.Log("Picks", "Number of Combos: " + comboList.Count);
+            AILog.Log("Picks", "FTBs found:");
             foreach (ComboBonuses ftb in firstTurnBonusList)
             {
-                AILog.Log("DEBUG", "BONUS: " + ftb.mainBonus.Details.Name);
-                AILog.Log("DEBUG\t", ftb.mainPick.Details.Name);
+                AILog.Log("Picks", "\tBonus: " + ftb.mainBonus.Details.Name);
+                AILog.Log("Picks", "\t\t" + ftb.mainPick.Details.Name);
                 for (int i = 0; i < ftb.adjacentPickTerritories.Count; i++)
                 {
                     if (ftb.adjacentPickTerritories[i].Details.Name.Equals(ftb.mainPick.Details.Name))
                     {
                         continue;
                     }
-                    AILog.Log("DEBUG\t\t", ftb.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("Picks", "\t\t\t" + ftb.adjacentPickTerritories[i].Details.Name);
                 }
             }
-
-            AILog.Log("DEBUG", "AFTER FTBS");
+            AILog.Log("Picks", "End of FTB list");
+            AILog.Log("Picks", "Combos found:");
 
             foreach (ComboBonuses combo in comboList)
             {
-                AILog.Log("DEBUG", "BONUS: " + combo.mainBonus.Details.Name);
-                AILog.Log("DEBUG\t", combo.mainPick.Details.Name);
+                AILog.Log("Picks", "\tBonus: " + combo.mainBonus.Details.Name);
+                AILog.Log("Picks", "\t\t" + combo.mainPick.Details.Name);
                 for (int i = 0; i < combo.adjacentPickTerritories.Count; i++)
                 {
                     if (combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name))
                     {
                         continue;
                     }
-                    AILog.Log("\tDEBUG\t\t", combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name);
+                    AILog.Log("Picks", "\t\t\t" + (combo.adjacentPickTerritories[i].Details.Name.Equals(combo.mainPick.Details.Name) ? combo.adjacentPickTerritories[++i].Details.Name : combo.adjacentPickTerritories[i].Details.Name));
                 }
             }
-            AILog.Log("DEBUG", "AFTER COMBOS");
+            AILog.Log("Picks", "End of combo list");
 
 
 
             List<TerritoryIDType> picks = weights.OrderByDescending(o => o.Value).Take(maxPicks).Select(o => o.Key).Distinct().ToList();
             //StatefulFogRemover.PickedTerritories = picks;
 
-            AILog.Log("DEBUG", "BEFORE FINAL RESHUFFLE");
+            AILog.Log("Picks", "Before final reshuffle:");
             foreach (var terr in picks)
             {
-                AILog.Log("DEBUG", map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
+                AILog.Log("Picks", "\t" + map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
             }
 
             ReorderPicksByCombos(firstTurnBonusList, comboList, ref picks);
 
-            AILog.Log("DEBUG", "AFTER FINAL RESHUFFLE");
+            AILog.Log("Picks", "After final reshuffle:");
             foreach (var terr in picks)
             {
-                AILog.Log("DEBUG", map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
+                AILog.Log("Picks", "\t" + map.Territories[terr].Bonuses[0].Details.Name + ", " + map.Territories[terr].Details.Name);
             }
 
             Memory.PickTracker.SetPickList(picks);
