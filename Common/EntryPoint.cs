@@ -15,7 +15,7 @@ namespace WarLight.Shared.AI
         {
             if (Debugger.IsAttached)
             {
-                Go(args);
+                 Go(args);
 
                 Console.WriteLine("Press any key to quit");
                 Console.ReadKey();

@@ -32,26 +32,15 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             int maxPicks = BotState.Settings.LimitDistributionTerritories == 0 ? BotState.Map.Territories.Count : (BotState.Settings.LimitDistributionTerritories * BotState.Players.Count(o => o.Value.State == GamePlayerState.Playing));
 
             var pickableTerritories = BotState.DistributionStanding.Territories.Values.Where(o => o.OwnerPlayerID == TerritoryStanding.AvailableForDistribution).Select(o => o.ID).ToList();
-            bool isAntWastelanded = false;
-            TerritoryIDType ausID = (TerritoryIDType) 0;
             var map = BotMap.FromStanding(BotState, BotState.DistributionStanding);
             var weights = pickableTerritories.ToDictionary(o => o, terrID =>
             {
-                // Check if Ant is wastelanded for Aus score modifier
-                map.Territories[terrID].OwnerPlayerID = BotState.Me.ID;
-                if (map.Territories[terrID].Bonuses[0].Details.Name.Equals("Antarctica") && BotState.BonusPickValueCalculator.IsWastelandedBonus(map.Territories[terrID].Bonuses[0]))
-                {
-                    isAntWastelanded = true;
-                } else if (map.Territories[terrID].Bonuses[0].Details.Name.Equals("Australia"))
-                {
-                    ausID = terrID;
-                }
-
+                
                 // Only find value if bonus has significiant amount
                 if(map.Territories[terrID].Bonuses.Count > 0)
                 {
                     BotBonus bonus = map.Territories[terrID].Bonuses[0];
-                    bonus.SetMyPickValueHeuristic();
+                    bonus.SetMyPickValueHeuristic(); //first evaluation of bonuses, using their standardized value, wastelands and how fast they expand
                     double r = bonus.ExpansionValue;
                     return r;
                 }
@@ -61,13 +50,8 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
-            // Check for if pick is in Aus
-            if (!isAntWastelanded && weights.ContainsKey(ausID))
-            {
-                weights[ausID] -= 25;
-            }
 
-            foreach (TerritoryIDType terrID in weights.Keys)
+                foreach (TerritoryIDType terrID in weights.Keys)
             {
                 AILog.Log("Pick Values", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
             }

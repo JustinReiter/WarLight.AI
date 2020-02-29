@@ -33,61 +33,571 @@ namespace WarLight.Shared.AI.JBot.Evaluation
         /// <returns></returns>
         public double GetExpansionValue(BotBonus bonus)
         {
-            double expansionValue = GetInefficientWastelandedBonusFactor(bonus);
+            double expansionValue = getInitialExpansionValue(bonus);
             Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);
+            expansionValue += addBonusCoverageFactor(bonus);
 
+            return expansionValue;
+        }
+
+        private double getInitialExpansionValue(BotBonus bonus)
+        {
+            double expansionValue = 0;
+            expansionValue = GetInefficientWastelandedBonusFactor(bonus);
             if (IsExpansionWorthless(bonus))
             {
                 return expansionValue;
             }
-
-            if (bonus.Details.Name.Equals("Caucasus") || bonus.Details.Name.Equals("West China"))
-            {
-                expansionValue -= 50;
-            }
+            expansionValue += assignStandardizedValue(bonus); // Assigning standardized values
 
             if (IsManyTurnBonus(bonus))
             {
-                expansionValue -= 15;
+                expansionValue -= 20;
             }
-
-            if (bonus.Details.Name.Equals("Greenland"))
-            {
-                foreach (BotTerritory terr in bonus.Territories)
-                {
-                    if (terr.Details.Name.Equals("Nord") || terr.Details.Name.Equals("Itseqqortoormiit"))
-                    {
-                        expansionValue -= 10;
-                    }
-                }
-            }
-
-            // Deduct if pick is between all territories (CA and Ant)
-            if (bonus.Details.Name.Equals("Central America"))
-            {
-                foreach (BotTerritory terr in bonus.Territories)
-                {
-                    if (terr.Details.Name.Equals("Mexico") && terr.Armies.NumArmies == 0)
-                    {
-                        expansionValue -= 8;
-                    }
-                }
-            } else if (bonus.Details.Name.Equals("Antarctica"))
-            {
-                foreach (BotTerritory terr in bonus.Territories)
-                {
-                    if (terr.Details.Name.Equals("South Pole") && terr.Armies.NumArmies == 0)
-                    {
-                        expansionValue -= 8;
-                    }
-                }
-            }
-
-            // Add modifier to prioritize smaller bonus amounts (+20 for 3er, +15 for 4er, +10 for 5er)
-            expansionValue += (7 - bonus.Amount) * 5;
             return expansionValue;
         }
 
+        private double addBonusCoverageFactor(BotBonus bonus)
+        {
+            double coverageBonus = 0;
+            List<BotBonus> CoveredNeighours = getNonWastelandedNeighbourBonuses(bonus);
+            for (int i = 0; i < CoveredNeighours.Count; i++){
+                if (getInitialExpansionValue(CoveredNeighours[i]) > 0)
+                {
+                    coverageBonus += getInitialExpansionValue(CoveredNeighours[i])*0.2;
+                }
+            }
+            return coverageBonus;
+        }
+
+        private List <BotBonus> getNonWastelandedNeighbourBonuses(BotBonus bonus) //List of bonuses without wastelands, that are maximum 1 distance away from the bonus
+        {
+
+            List<BotBonus> CoveredNeighours = new List<BotBonus>();
+
+            foreach (BotTerritory terr in bonus.Territories)
+            {
+                foreach (BotTerritory adjTerr in terr.Neighbors)
+                {
+                    foreach (BotTerritory secondAdjTerr in adjTerr.Neighbors)
+                    {                       
+                        if (!CoveredNeighours.Contains(secondAdjTerr.Bonuses[0])){
+                            CoveredNeighours.Add(secondAdjTerr.Bonuses[0]);
+                        }
+                    }
+                }
+            }
+
+            CoveredNeighours.Remove(bonus);
+            return CoveredNeighours;
+        }
+
+        private double assignStandardizedValue(BotBonus bonus)
+        {
+            double expansionValue = 0;
+            switch (bonus.Details.Name)
+            {
+                case "Antarctica":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+
+                        if (terr.Armies.NumArmies == 0)
+                        {
+
+                            switch (terr.Details.Name)
+                            {
+                                case "Siple": expansionValue += 50; break;
+                                case "South Pole": expansionValue += 50; break;
+                                case "Scott": expansionValue += 50; break;
+                                case "Novolazarevskaya": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Australia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Tasmania": expansionValue += 50; break;
+                                case "New Zealand": expansionValue += 50; break;
+                                case "New Southwales": expansionValue += 50; break;
+                                case "South Australia": expansionValue += 50; break;
+                                case "Western Australia": expansionValue += 50; break;
+                                case "Queensland": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Canada":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Yukon": expansionValue += 50; break;
+                                case "British Columbia": expansionValue += 50; break;
+                                case "Northwest Territories": expansionValue += 50; break;
+                                case "Alberta": expansionValue += 50; break;
+                                case "Nunavut": expansionValue += 50; break;
+                                case "Ontario": expansionValue += 50; break;
+                                case "Quebec": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Caucasus":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Tadschikistan": expansionValue += 50; break;
+                                case "Kyrgrzstan": expansionValue += 50; break;
+                                case "Eastern Kazakhstan": expansionValue += 50; break;
+                                case "Turkmenistan": expansionValue += 50; break;
+                                case "Western Kazakhszan": expansionValue += 50; break;
+                                case "Georgia": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Central America":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Baja": expansionValue += 50; break;
+                                case "Mexico": expansionValue += 50; break;
+                                case "Panama": expansionValue += 50; break;
+                                case "Cuba": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Central Russia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Tomsk": expansionValue += 50; break;
+                                case "Omsk": expansionValue += 50; break;
+                                case "Tura": expansionValue += 50; break;
+                                case "Jessej": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "East Africa":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Kenya": expansionValue += 50; break;
+                                case "Somalia": expansionValue += 50; break;
+                                case "Ethiopia": expansionValue += 50; break;
+                                case "Sudan": expansionValue += 50; break;
+                                case "Egypt": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "East China":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Taiwan": expansionValue += 50; break;
+                                case "Shanghai": expansionValue += 50; break;
+                                case "Jiangxi": expansionValue += 50; break;
+                                case "Hong Kong": expansionValue += 50; break;
+                                case "Beijing": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "East Russia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Kamchatka": expansionValue += 50; break;
+                                case "Mys Lopatk": expansionValue += 50; break;
+                                case "Khabarovsk": expansionValue += 50; break;
+                                case "Eastern Siberia": expansionValue += 50; break;
+                                case "Chita": expansionValue += 50; break;
+                                case "Western Siberia": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "East US":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Midwest": expansionValue += 50; break;
+                                case "Gulf Coast": expansionValue += 50; break;
+                                case "Great Lakes": expansionValue += 50; break;
+                                case "Atlantic Northeast": expansionValue += 50; break;
+                                case "Tennessee": expansionValue += 50; break;
+                                case "Florida": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Europe":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Ukraine": expansionValue += 50; break;
+                                case "Poland": expansionValue += 50; break;
+                                case "Germany": expansionValue += 50; break;
+                                case "Italy": expansionValue += 50; break;
+                                case "France": expansionValue += 50; break;
+                                case "Spain": expansionValue += 50; break;
+                                case "United Kingdom": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Greenland":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Danmark Havn": expansionValue += 50; break;
+                                case "Iceland": expansionValue += 50; break;
+                                case "Itseqqortoormiit": expansionValue += 50; break;
+                                case "Nord": expansionValue += 50; break;
+                                case "Nuuk": expansionValue += 50; break;
+                                case "Qaanaaq": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Indonesia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Solomon Islands": expansionValue += 50; break;
+                                case "Papua New Guinea": expansionValue += 50; break;
+                                case "Philippines": expansionValue += 50; break;
+                                case "Borneo": expansionValue += 50; break;
+                                case "Malaysia": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Middle East":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Afghanistan": expansionValue += 50; break;
+                                case "Iran": expansionValue += 50; break;
+                                case "Saudi Arabia": expansionValue += 50; break;
+                                case "Iraq": expansionValue += 50; break;
+                                case "Israel": expansionValue += 50; break;
+                                case "Turkey": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "North Africa":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Niger": expansionValue += 50; break;
+                                case "Mali": expansionValue += 50; break;
+                                case "Mauritania": expansionValue += 50; break;
+                                case "Algeria": expansionValue += 50; break;
+                                case "Libya": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "South Africa":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Madagascar": expansionValue += 50; break;
+                                case "South Africa": expansionValue += 50; break;
+                                case "Namibia": expansionValue += 50; break;
+                                case "Botswana": expansionValue += 50; break;
+                                case "Angola": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "South America":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Colombia": expansionValue += 50; break;
+                                case "Venezuela": expansionValue += 50; break;
+                                case "Brazil": expansionValue += 50; break;
+                                case "Bolivia": expansionValue += 50; break;
+                                case "Argentina": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Southeast Asia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                            {
+                                switch (terr.Details.Name)
+                                {
+                                    case "Thailand": expansionValue += 50; break;
+                                    case "Myanmar": expansionValue += 50; break;
+                                    case "India": expansionValue += 50; break;
+                                    case "Pakistan": expansionValue += 50; break;
+                                    default: break;
+                                }
+                            }
+                    }
+
+                    break;
+
+                case "West Africa":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Congo": expansionValue += 50; break;
+                                case "Cameroon": expansionValue += 50; break;
+                                case "Chad": expansionValue += 50; break;
+                                case "Nigeria": expansionValue += 50; break;
+                                case "Ghana": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "West China":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Tibet": expansionValue += 50; break;
+                                case "Xinjiang": expansionValue += 50; break;
+                                case "Qinghai": expansionValue += 50; break;
+                                case "Shaanxi": expansionValue += 50; break;
+                                case "Mongolia": expansionValue += 50; break;
+                                case "Inner Mongolia": expansionValue += 50; break;
+                                case "Heilongjiang": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "West Russia":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Vorkuta": expansionValue += 50; break;
+                                case "Ufa": expansionValue += 50; break;
+                                case "Arkhangelsk": expansionValue += 50; break;
+                                case "Moscow": expansionValue += 50; break;
+                                case "Murmansk": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "West US":
+
+                    expansionValue += 45;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Pacific Northwest": expansionValue += 50; break;
+                                case "California": expansionValue += 50; break;
+                                case "Great Basin": expansionValue += 50; break;
+                                case "Southwest": expansionValue += 50; break;
+                                case "Rocky Mountains": expansionValue += 50; break;
+                                case "Texas": expansionValue += 50; break;
+                                case "Great Plains": expansionValue += 50; break;
+                                default: break;
+                            }
+                        }
+                    }
+                    
+                    break;
+
+                default:
+                    break;
+            }
+            return expansionValue;
+        }
 
         private bool IsExpansionWorthless(BotBonus bonus)
         {
@@ -115,10 +625,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             double value = 0.0;
             if (IsWastelandedBonus(bonus))
             {
-                value -= 100;
+                value -= 1000;
             }
 
-            return IsInefficientBonus(bonus) ? value - 50 : value;
+            return IsInefficientBonus(bonus) ? value - 25 : value;
         }
 
         public Boolean IsFirstTurnBonus(BotBonus bonus)
@@ -337,5 +847,6 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             }
             return UnseenTerritories;
         }
+
     }
 }
