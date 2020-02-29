@@ -74,6 +74,57 @@ namespace WarLight.Shared.AI.JBot.Bot
             }
         }
 
+        public List<BotTerritory> FirstAdjacentPicks
+        {
+            get
+            {
+                List<BotTerritory> firstAdjacentPicks = new List<BotTerritory>();
+
+                List<BotTerritory> territories = this.Territories;
+                foreach (BotTerritory terr in territories)
+                {
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (!territories.Contains(adjTerr) && adjTerr.Armies.NumArmies == 0 && !firstAdjacentPicks.Contains(adjTerr))
+                        {
+                            firstAdjacentPicks.Add(adjTerr);
+                        }
+                    }
+                }
+
+                return firstAdjacentPicks;
+            }
+        }
+
+        public List<BotTerritory> SecondAdjacentPicks
+        {
+            get
+            {
+                List<BotTerritory> secondAdjacentPicks = new List<BotTerritory>();
+
+                List<BotTerritory> territories = this.Territories;
+                List<BotTerritory> firstAdjacentPicks = this.FirstAdjacentPicks;
+                foreach (BotTerritory terr in territories)
+                {
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (!territories.Contains(adjTerr) && adjTerr.Armies.NumArmies != 10)
+                        {
+                            foreach (BotTerritory adjSecondTerr in adjTerr.Neighbors)
+                            {
+                                if (!territories.Contains(adjSecondTerr) && !firstAdjacentPicks.Contains(adjSecondTerr) && adjSecondTerr.Armies.NumArmies == 0 && !secondAdjacentPicks.Contains(adjSecondTerr))
+                                {
+                                    secondAdjacentPicks.Add(adjSecondTerr);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return secondAdjacentPicks;
+            }
+        }
+
         public List<BotTerritory> NeutralTerritories
         {
             get
