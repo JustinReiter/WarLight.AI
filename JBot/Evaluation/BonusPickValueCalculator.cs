@@ -50,24 +50,24 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                     {
                         if (IsWastelandedBonus(bonus.FirstAdjacentPicks[i].Bonuses[0]))
                         {
-                            SafetyBonus -= 15;
+                            SafetyBonus -= 10;
                         }
                         else
                         {
-                            SafetyBonus -= getInitialExpansionValue(bonus.FirstAdjacentPicks[i].Bonuses[0]) * 0.3;
+                            SafetyBonus -= getInitialExpansionValue(bonus.FirstAdjacentPicks[i].Bonuses[0]) * 0.4;
                         }
                     }       
             }
 
             for (int i = 0; i < bonus.SecondAdjacentPicks.Count; i++)
             {                
-                    if (IsWastelandedBonus(bonus.FirstAdjacentPicks[i].Bonuses[0]))
+                    if (IsWastelandedBonus(bonus.SecondAdjacentPicks[i].Bonuses[0]))
                     {
                         SafetyBonus -= 5;
                     }
                     else
                     {
-                        SafetyBonus -= getInitialExpansionValue(bonus.FirstAdjacentPicks[i].Bonuses[0]) * 0.15;
+                        SafetyBonus -= getInitialExpansionValue(bonus.SecondAdjacentPicks[i].Bonuses[0]) * 0.2;
                     }
                 
             }
@@ -100,7 +100,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
             if (IsManyTurnBonus(bonus))
             {
-                expansionValue -= 20;
+                expansionValue -= 40;
             }
             return expansionValue;
         }
@@ -147,7 +147,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             {
                 case "Antarctica":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -157,10 +157,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                             switch (terr.Details.Name)
                             {
-                                case "Siple": expansionValue += 50; break;
-                                case "South Pole": expansionValue += 50; break;
-                                case "Scott": expansionValue += 50; break;
-                                case "Novolazarevskaya": expansionValue += 50; break;
+                                case "Siple": expansionValue += 90; break;
+                                case "South Pole": expansionValue += 60; break;
+                                case "Scott": expansionValue += 80; break;
+                                case "Novolazarevskaya": expansionValue += 75; break;
                                 default: break;
                             }
                         }
@@ -170,7 +170,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Australia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -178,12 +178,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Tasmania": expansionValue += 50; break;
-                                case "New Zealand": expansionValue += 50; break;
-                                case "New Southwales": expansionValue += 50; break;
-                                case "South Australia": expansionValue += 50; break;
-                                case "Western Australia": expansionValue += 50; break;
-                                case "Queensland": expansionValue += 50; break;
+                                case "Tasmania": expansionValue += 60; break;
+                                case "New Zealand": expansionValue += 45; break;
+                                case "New Southwales": expansionValue += 35; break;
+                                case "South Australia": expansionValue += 35; break;
+                                case "Western Australia": expansionValue += 30; break;
+                                case "Queensland": expansionValue += 40; break;
                                 default: break;
                             }
                         }
@@ -193,7 +193,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Canada":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -201,13 +201,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Yukon": expansionValue += 50; break;
-                                case "British Columbia": expansionValue += 50; break;
-                                case "Northwest Territories": expansionValue += 50; break;
-                                case "Alberta": expansionValue += 50; break;
-                                case "Nunavut": expansionValue += 50; break;
-                                case "Ontario": expansionValue += 50; break;
-                                case "Quebec": expansionValue += 50; break;
+                                case "Yukon": expansionValue += 0; break;
+                                case "British Columbia": expansionValue += 5; break;
+                                case "Northwest Territories": expansionValue += 5; break;
+                                case "Alberta": expansionValue += 10; break;
+                                case "Nunavut": expansionValue += 15; break;
+                                case "Ontario": expansionValue += 15; break;
+                                case "Quebec": expansionValue += 20; break;
                                 default: break;
                             }
                         }
@@ -225,12 +225,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Tadschikistan": expansionValue += 50; break;
-                                case "Kyrgrzstan": expansionValue += 50; break;
-                                case "Eastern Kazakhstan": expansionValue += 50; break;
-                                case "Turkmenistan": expansionValue += 50; break;
-                                case "Western Kazakhszan": expansionValue += 50; break;
-                                case "Georgia": expansionValue += 50; break;
+                                case "Tadschikistan": expansionValue += 35; break;
+                                case "Kyrgrzstan": expansionValue += 30; break;
+                                case "Eastern Kazakhstan": expansionValue += 55; break;
+                                case "Turkmenistan": expansionValue += 25; break;
+                                case "Western Kazakhszan": expansionValue += 25; break;
+                                case "Georgia": expansionValue += 30; break;
                                 default: break;
                             }
                         }
@@ -240,7 +240,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Central America":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -248,10 +248,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Baja": expansionValue += 50; break;
-                                case "Mexico": expansionValue += 50; break;
-                                case "Panama": expansionValue += 50; break;
-                                case "Cuba": expansionValue += 50; break;
+                                case "Baja": expansionValue += 70; break;
+                                case "Mexico": expansionValue += 55; break;
+                                case "Panama": expansionValue += 80; break;
+                                case "Cuba": expansionValue += 95; break;
                                 default: break;
                             }
                         }
@@ -261,7 +261,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Central Russia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -269,10 +269,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Tomsk": expansionValue += 50; break;
-                                case "Omsk": expansionValue += 50; break;
-                                case "Tura": expansionValue += 50; break;
-                                case "Jessej": expansionValue += 50; break;
+                                case "Tomsk": expansionValue += 65; break;
+                                case "Omsk": expansionValue += 70; break;
+                                case "Tura": expansionValue += 55; break;
+                                case "Jessej": expansionValue += 70; break;
+                                case "Dudinka": expansionValue += 75; break;
                                 default: break;
                             }
                         }
@@ -282,7 +283,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "East Africa":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -290,11 +291,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Kenya": expansionValue += 50; break;
-                                case "Somalia": expansionValue += 50; break;
+                                case "Kenya": expansionValue += 25; break;
+                                case "Somalia": expansionValue += 55; break;
                                 case "Ethiopia": expansionValue += 50; break;
-                                case "Sudan": expansionValue += 50; break;
-                                case "Egypt": expansionValue += 50; break;
+                                case "Sudan": expansionValue += 75; break;
+                                case "Egypt": expansionValue += 20; break;
                                 default: break;
                             }
                         }
@@ -304,7 +305,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "East China":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -312,10 +313,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Taiwan": expansionValue += 50; break;
-                                case "Shanghai": expansionValue += 50; break;
-                                case "Jiangxi": expansionValue += 50; break;
-                                case "Hong Kong": expansionValue += 50; break;
+                                case "Taiwan": expansionValue += 40; break;
+                                case "Shanghai": expansionValue += 60; break;
+                                case "Jiangxi": expansionValue += 65; break;
+                                case "Hong Kong": expansionValue += 80; break;
                                 case "Beijing": expansionValue += 50; break;
                                 default: break;
                             }
@@ -326,7 +327,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "East Russia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -334,12 +335,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Kamchatka": expansionValue += 50; break;
-                                case "Mys Lopatk": expansionValue += 50; break;
-                                case "Khabarovsk": expansionValue += 50; break;
-                                case "Eastern Siberia": expansionValue += 50; break;
-                                case "Chita": expansionValue += 50; break;
-                                case "Western Siberia": expansionValue += 50; break;
+                                case "Kamchatka": expansionValue += 15; break;
+                                case "Mys Lopatk": expansionValue += 45; break;
+                                case "Khabarovsk": expansionValue += 55; break;
+                                case "Eastern Siberia": expansionValue += 70; break;
+                                case "Chita": expansionValue += 80; break;
+                                case "Western Siberia": expansionValue += 55; break;
                                 default: break;
                             }
                         }
@@ -349,7 +350,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "East US":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -357,12 +358,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Midwest": expansionValue += 50; break;
-                                case "Gulf Coast": expansionValue += 50; break;
-                                case "Great Lakes": expansionValue += 50; break;
-                                case "Atlantic Northeast": expansionValue += 50; break;
-                                case "Tennessee": expansionValue += 50; break;
-                                case "Florida": expansionValue += 50; break;
+                                case "Midwest": expansionValue += 60; break;
+                                case "Gulf Coast": expansionValue += 75; break;
+                                case "Great Lakes": expansionValue += 65; break;
+                                case "Atlantic Northeast": expansionValue += 75; break;
+                                case "Tennessee": expansionValue += 75; break;
+                                case "Florida": expansionValue += 80; break;
                                 default: break;
                             }
                         }
@@ -372,7 +373,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Europe":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -380,13 +381,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Ukraine": expansionValue += 50; break;
-                                case "Poland": expansionValue += 50; break;
-                                case "Germany": expansionValue += 50; break;
-                                case "Italy": expansionValue += 50; break;
-                                case "France": expansionValue += 50; break;
-                                case "Spain": expansionValue += 50; break;
-                                case "United Kingdom": expansionValue += 50; break;
+                                case "Ukraine": expansionValue += 25; break;
+                                case "Poland": expansionValue += 10; break;
+                                case "Germany": expansionValue += 15; break;
+                                case "Italy": expansionValue += 10; break;
+                                case "France": expansionValue += 5; break;
+                                case "Spain": expansionValue += 5; break;
+                                case "United Kingdom": expansionValue += 10; break;
                                 default: break;
                             }
                         }
@@ -396,7 +397,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Greenland":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -404,12 +405,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Danmark Havn": expansionValue += 50; break;
-                                case "Iceland": expansionValue += 50; break;
-                                case "Itseqqortoormiit": expansionValue += 50; break;
-                                case "Nord": expansionValue += 50; break;
-                                case "Nuuk": expansionValue += 50; break;
-                                case "Qaanaaq": expansionValue += 50; break;
+                                case "Danmark Havn": expansionValue += 70; break;
+                                case "Iceland": expansionValue += 25; break;
+                                case "Itseqqortoormiit": expansionValue += 35; break;
+                                case "Nord": expansionValue += 35; break;
+                                case "Nuuk": expansionValue += 65; break;
+                                case "Qaanaaq": expansionValue += 20; break;
                                 default: break;
                             }
                         }
@@ -419,7 +420,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Indonesia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -427,11 +428,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Solomon Islands": expansionValue += 50; break;
-                                case "Papua New Guinea": expansionValue += 50; break;
-                                case "Philippines": expansionValue += 50; break;
+                                case "Solomon Islands": expansionValue += 15; break;
+                                case "Papua New Guinea": expansionValue += 45; break;
+                                case "Philippines": expansionValue += 55; break;
                                 case "Borneo": expansionValue += 50; break;
-                                case "Malaysia": expansionValue += 50; break;
+                                case "Malaysia": expansionValue += 45; break;
                                 default: break;
                             }
                         }
@@ -441,7 +442,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Middle East":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -449,12 +450,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Afghanistan": expansionValue += 50; break;
-                                case "Iran": expansionValue += 50; break;
-                                case "Saudi Arabia": expansionValue += 50; break;
-                                case "Iraq": expansionValue += 50; break;
-                                case "Israel": expansionValue += 50; break;
-                                case "Turkey": expansionValue += 50; break;
+                                case "Afghanistan": expansionValue += 20; break;
+                                case "Iran": expansionValue += 35; break;
+                                case "Saudi Arabia": expansionValue += 5; break;
+                                case "Iraq": expansionValue += 10; break;
+                                case "Israel": expansionValue += 15; break;
+                                case "Turkey": expansionValue += 25; break;
                                 default: break;
                             }
                         }
@@ -464,7 +465,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "North Africa":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -472,11 +473,32 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Niger": expansionValue += 50; break;
-                                case "Mali": expansionValue += 50; break;
-                                case "Mauritania": expansionValue += 50; break;
-                                case "Algeria": expansionValue += 50; break;
-                                case "Libya": expansionValue += 50; break;
+                                case "Niger": expansionValue += 35; break;
+                                case "Mali": expansionValue += 20; break;
+                                case "Mauritania": expansionValue += 5; break;
+                                case "Algeria": expansionValue += 15; break;
+                                case "Libya": expansionValue += 30; break;
+                                default: break;
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "Scandivanian Peninsula":
+
+                    expansionValue += 0;
+
+                    foreach (BotTerritory terr in bonus.Territories)
+                    {
+                        if (terr.Armies.NumArmies == 0)
+                        {
+                            switch (terr.Details.Name)
+                            {
+                                case "Finland": expansionValue += 90; break;
+                                case "Sweden": expansionValue += 70; break;
+                                case "Norway": expansionValue += 75; break;
+                                case "Svabard": expansionValue += 75; break;
                                 default: break;
                             }
                         }
@@ -486,7 +508,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "South Africa":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -494,11 +516,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Madagascar": expansionValue += 50; break;
+                                case "Madagascar": expansionValue += 10; break;
                                 case "South Africa": expansionValue += 50; break;
-                                case "Namibia": expansionValue += 50; break;
-                                case "Botswana": expansionValue += 50; break;
-                                case "Angola": expansionValue += 50; break;
+                                case "Namibia": expansionValue += 15; break;
+                                case "Botswana": expansionValue += 25; break;
+                                case "Angola": expansionValue += 20; break;
                                 default: break;
                             }
                         }
@@ -508,7 +530,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "South America":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -516,11 +538,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Colombia": expansionValue += 50; break;
-                                case "Venezuela": expansionValue += 50; break;
-                                case "Brazil": expansionValue += 50; break;
-                                case "Bolivia": expansionValue += 50; break;
-                                case "Argentina": expansionValue += 50; break;
+                                case "Colombia": expansionValue += 60; break;
+                                case "Venezuela": expansionValue += 70; break;
+                                case "Brazil": expansionValue += 80; break;
+                                case "Bolivia": expansionValue += 35; break;
+                                case "Argentina": expansionValue += 60; break;
                                 default: break;
                             }
                         }
@@ -530,7 +552,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "Southeast Asia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -538,10 +560,10 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                             {
                                 switch (terr.Details.Name)
                                 {
-                                    case "Thailand": expansionValue += 50; break;
-                                    case "Myanmar": expansionValue += 50; break;
-                                    case "India": expansionValue += 50; break;
-                                    case "Pakistan": expansionValue += 50; break;
+                                    case "Thailand": expansionValue += 45; break;
+                                    case "Myanmar": expansionValue += 80; break;
+                                    case "India": expansionValue += 75; break;
+                                    case "Pakistan": expansionValue += 55; break;
                                     default: break;
                                 }
                             }
@@ -551,7 +573,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "West Africa":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -559,11 +581,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Congo": expansionValue += 50; break;
-                                case "Cameroon": expansionValue += 50; break;
-                                case "Chad": expansionValue += 50; break;
-                                case "Nigeria": expansionValue += 50; break;
-                                case "Ghana": expansionValue += 50; break;
+                                case "Congo": expansionValue += 45; break;
+                                case "Cameroon": expansionValue += 45; break;
+                                case "Chad": expansionValue += 65; break;
+                                case "Nigeria": expansionValue += 70; break;
+                                case "Ghana": expansionValue += 35; break;
                                 default: break;
                             }
                         }
@@ -573,7 +595,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "West China":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -582,12 +604,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                             switch (terr.Details.Name)
                             {
                                 case "Tibet": expansionValue += 50; break;
-                                case "Xinjiang": expansionValue += 50; break;
-                                case "Qinghai": expansionValue += 50; break;
-                                case "Shaanxi": expansionValue += 50; break;
-                                case "Mongolia": expansionValue += 50; break;
-                                case "Inner Mongolia": expansionValue += 50; break;
-                                case "Heilongjiang": expansionValue += 50; break;
+                                case "Xinjiang": expansionValue += 65; break;
+                                case "Qinghai": expansionValue += 40; break;
+                                case "Shaanxi": expansionValue += 60; break;
+                                case "Mongolia": expansionValue += 45; break;
+                                case "Inner Mongolia": expansionValue += 40; break;
+                                case "Heilongjiang": expansionValue += 20; break;
                                 default: break;
                             }
                         }
@@ -597,7 +619,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "West Russia":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -605,11 +627,11 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Vorkuta": expansionValue += 50; break;
-                                case "Ufa": expansionValue += 50; break;
-                                case "Arkhangelsk": expansionValue += 50; break;
-                                case "Moscow": expansionValue += 50; break;
-                                case "Murmansk": expansionValue += 50; break;
+                                case "Vorkuta": expansionValue += 55; break;
+                                case "Ufa": expansionValue += 80; break;
+                                case "Arkhangelsk": expansionValue += 65; break;
+                                case "Moscow": expansionValue += 75; break;
+                                case "Murmansk": expansionValue += 70; break;
                                 default: break;
                             }
                         }
@@ -619,7 +641,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
 
                 case "West US":
 
-                    expansionValue += 45;
+                    expansionValue += 0;
 
                     foreach (BotTerritory terr in bonus.Territories)
                     {
@@ -627,13 +649,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                         {
                             switch (terr.Details.Name)
                             {
-                                case "Pacific Northwest": expansionValue += 50; break;
-                                case "California": expansionValue += 50; break;
-                                case "Great Basin": expansionValue += 50; break;
-                                case "Southwest": expansionValue += 50; break;
-                                case "Rocky Mountains": expansionValue += 50; break;
-                                case "Texas": expansionValue += 50; break;
-                                case "Great Plains": expansionValue += 50; break;
+                                case "Pacific Northwest": expansionValue += 10; break;
+                                case "California": expansionValue += 20; break;
+                                case "Great Basin": expansionValue += 15; break;
+                                case "Southwest": expansionValue += 25; break;
+                                case "Rocky Mountains": expansionValue += 10; break;
+                                case "Texas": expansionValue += 25; break;
+                                case "Great Plains": expansionValue += 10; break;
                                 default: break;
                             }
                         }
@@ -676,7 +698,7 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 value -= 1000;
             }
 
-            return IsInefficientBonus(bonus) ? value - 25 : value;
+            return IsInefficientBonus(bonus) ? value - 35 : value;
         }
 
         public Boolean IsFirstTurnBonus(BotBonus bonus)

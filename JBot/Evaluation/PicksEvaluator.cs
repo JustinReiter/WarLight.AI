@@ -50,12 +50,12 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
-
+            
                 foreach (TerritoryIDType terrID in weights.Keys)
             {
                 AILog.Log("Pick Values", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
             }
-
+            
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
             List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
             List<ComboBonuses> comboList = new List<ComboBonuses>();
