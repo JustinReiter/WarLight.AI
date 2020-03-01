@@ -36,8 +36,56 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             double expansionValue = getInitialExpansionValue(bonus);
             Boolean isFirstTurnBonus = IsFirstTurnBonus(bonus);
             expansionValue += addBonusCoverageFactor(bonus);
+            expansionValue += addSafetyFactor(bonus);
 
             return expansionValue;
+        }
+
+        private double addSafetyFactor(BotBonus bonus)
+        {
+            double SafetyBonus = 100;
+            
+            for (int i = 0; i < bonus.FirstAdjacentPicks.Count; i++){
+                if (!bonus.FirstAdjacentPicks[i].IsNeighbor(getDistTerritory(bonus)))
+                    {
+                        if (IsWastelandedBonus(bonus.FirstAdjacentPicks[i].Bonuses[0]))
+                        {
+                            SafetyBonus -= 15;
+                        }
+                        else
+                        {
+                            SafetyBonus -= getInitialExpansionValue(bonus.FirstAdjacentPicks[i].Bonuses[0]) * 0.3;
+                        }
+                    }       
+            }
+
+            for (int i = 0; i < bonus.SecondAdjacentPicks.Count; i++)
+            {                
+                    if (IsWastelandedBonus(bonus.FirstAdjacentPicks[i].Bonuses[0]))
+                    {
+                        SafetyBonus -= 5;
+                    }
+                    else
+                    {
+                        SafetyBonus -= getInitialExpansionValue(bonus.FirstAdjacentPicks[i].Bonuses[0]) * 0.15;
+                    }
+                
+            }
+
+            return SafetyBonus;
+        }
+
+        private BotTerritory getDistTerritory(BotBonus bonus)
+        {
+            BotTerritory terry = null;
+            foreach (BotTerritory terr in bonus.Territories)
+            {
+                if (terr.Armies.NumArmies == 0)
+                {
+                    terry = terr;
+                }
+            }
+            return terry;
         }
 
         private double getInitialExpansionValue(BotBonus bonus)
