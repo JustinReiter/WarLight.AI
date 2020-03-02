@@ -10,7 +10,7 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
     static class Dijkstra
     {
 
-        public static PathNode ShortestPath(BotMap map, BotTerritory source, BotTerritory destination)
+        public static PathNode DijkstrasAlgorithm(BotMap map, BotTerritory source, List<BotTerritory> destinations)
         {
             List<PathNode> seenTerr = new List<PathNode>();
             PathVector unseenTerr = new PathVector();
@@ -28,7 +28,7 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
                 }
             }
 
-            while (unseenTerr.Contains(destination.ID))
+            while (DoesVectorHaveAllDestinations(unseenTerr, destinations))
             {
                 PathNode pointer = unseenTerr.nodes[0];
                 foreach (TerritoryIDType terrId in pointer.adjacent)
@@ -53,12 +53,61 @@ namespace WarLight.Shared.AI.JBot.BasicAlgorithms
             return seenTerr.Last();
         }
 
-        public static PathNode ShortestPath(BotMap map, List<BotTerritory> sources, BotTerritory destination)
+        private static bool DoesVectorHaveAllDestinations(PathVector vector, List<BotTerritory> territories)
         {
-            PathNode bestPath = ShortestPath(map, sources[0], destination);
-            foreach (BotTerritory source in sources)
+            foreach (BotTerritory terr in territories)
             {
-                PathNode temp = ShortestPath(map, source, destination);
+                if (!vector.Contains(terr.ID))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static PathNode ShortestPath(BotMap map, dynamic source, dynamic destination)
+        {
+            List<BotTerritory> sourceTerrList = new List<BotTerritory>();
+            List<BotTerritory> destTerrList = new List<BotTerritory>();
+
+            // Convert source object into list of source territories (Accepted input types: BotTerritory/BotBonus/List<BotTerritory)
+            if (source is BotTerritory)
+            {
+                sourceTerrList.Add(source);
+            } else if (source is BotBonus)
+            {
+                sourceTerrList.AddRange(source.Territories);
+            } else if (source is List<BotTerritory>)
+            {
+                sourceTerrList.AddRange(source);
+            } else
+            {
+                throw new Exception("Unexpected source type thrown to Dijkstra's shortest path");
+            }
+
+            // Convert destination object into list of destination territories (Accepted input types: BotTerritory/BotBonus/List<BotTerritory)
+            if (destination is BotTerritory)
+            {
+                destTerrList.Add(destination);
+            }
+            else if (destination is BotBonus)
+            {
+                destTerrList.AddRange(destination.Territories);
+            }
+            else if (destination is List<BotTerritory>)
+            {
+                destTerrList.AddRange(destination);
+            }
+            else
+            {
+                throw new Exception("Unexpected destination type thrown to Dijkstra's shortest path");
+            }
+
+            // Iterate through each source territory to find shortest path
+            PathNode bestPath = DijkstrasAlgorithm(map, sourceTerrList[0], destTerrList);
+            foreach (BotTerritory sourceTerr in sourceTerrList)
+            {
+                PathNode temp = DijkstrasAlgorithm(map, sourceTerr, destTerrList);
                 bestPath = bestPath.minDistance < temp.minDistance ? bestPath : temp;
             }
             return bestPath;
