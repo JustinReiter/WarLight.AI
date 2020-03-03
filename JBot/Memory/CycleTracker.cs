@@ -52,17 +52,59 @@ namespace WarLight.Shared.AI.JBot.Memory
             if (chosenPicks[0] != givenPicks[0] || (chosenPicks[0] == givenPicks[0] && chosenPicks[5] == givenPicks[2]))
             {
                 SetCycle(true);
+                AILog.Log("Cycle", "Able to determine cycle order through picks");
+                AILog.Log("Cycle", "\tOddTurnPriority: " + isOddTurnCycle);
             } else if (chosenPicks[0] == givenPicks[0] && (chosenPicks[2] == givenPicks[1] || chosenPicks[3] == givenPicks[1])) {
                 SetCycle(false);
+                AILog.Log("Cycle", "Able to determine cycle order through picks");
+                AILog.Log("Cycle", "\tOddTurnPriority: " + isOddTurnCycle);
             }
         }
 
-        public static void SetCycleOrders(List<GameOrderDeploy> deployments, List<GameOrderAttackTransfer> attackTransfers, PlayerIDType meID, int NumberOfTurns)
+        public static void SetCycleOrders(List<GameOrderDeploy> deployments, List<GameOrderAttackTransfer> attackTransfers, PlayerIDType meID, int numberOfTurns)
         {
             if (deployments[0].PlayerID != meID || attackTransfers[0].PlayerID != meID)
             {
-                Memory.CycleTracker.SetCycle(NumberOfTurns % 2 == 1);
+                Memory.CycleTracker.SetCycle(numberOfTurns % 2 == 1);
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Able to determine cycle order through first order");
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ":\tOddTurnPriority: " + isOddTurnCycle);
+            } else if (ParseListForOrder(deployments, meID, numberOfTurns)) {
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Able to determine cycle order through deployments");
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ":\tOddTurnPriority: " + isOddTurnCycle);
+            } else if (ParseListForOrder(attackTransfers, meID, numberOfTurns))
+            {
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Able to determine cycle order through deployments");
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ":\tOddTurnPriority: " + isOddTurnCycle);
+            } else
+            {
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Unable to determine cycle order");
             }
+        }
+
+        private static bool ParseListForOrder(dynamic list, PlayerIDType me, int numberOfTurns)
+        {
+            int enemyIndex = -1;
+            bool canFindOrderCycle = false;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].PlayerID != me && enemyIndex == -1)
+                {
+                    enemyIndex = i;
+                    break;
+                }
+                else if (enemyIndex != -1 && list[i].PlayerID == me)
+                {
+                    canFindOrderCycle = true;
+                }
+            }
+
+            if (canFindOrderCycle)
+            {
+                SetCycle(enemyIndex % 2 == 0 && numberOfTurns % 2 == 1);
+                return true;
+            }
+
+            return false;
         }
     }
 }
