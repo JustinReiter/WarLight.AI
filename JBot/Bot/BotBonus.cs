@@ -74,6 +74,41 @@ namespace WarLight.Shared.AI.JBot.Bot
             }
         }
 
+        public List<BotTerritory> MultiBorderTerritories
+        {
+            get
+            {
+                IDictionary<BotTerritory, int> multiBorderCount = new Dictionary<BotTerritory, int>();
+                List<BotTerritory> multiBorderTerritories = new List<BotTerritory>();
+                List<BotTerritory> territories = this.Territories;
+                foreach (BotTerritory terr in territories)
+                {
+                    foreach (BotTerritory adjTerr in terr.Neighbors)
+                    {
+                        if (!territories.Contains(adjTerr))
+                        {
+                            int count;
+
+                            multiBorderCount.TryGetValue(adjTerr, out count);
+                            multiBorderCount[adjTerr] = count + 1;
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<BotTerritory, int> pair in multiBorderCount)
+                {
+                    if (pair.Value > 1)
+                    {
+                        AILog.Log("Order", pair.Key.Details.Name + ": " + pair.Value);
+                        multiBorderTerritories.Add(pair.Key);
+                    }
+                }
+                multiBorderTerritories.Sort((a, b) => multiBorderCount[b].CompareTo(multiBorderCount[a]));
+
+                return multiBorderTerritories;
+            }
+        }
+
         public List<BotTerritory> FirstAdjacentPicks
         {
             get
