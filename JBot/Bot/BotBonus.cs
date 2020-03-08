@@ -74,7 +74,10 @@ namespace WarLight.Shared.AI.JBot.Bot
             }
         }
 
-        public List<BotTerritory> MultiBorderTerritories
+        /// <summary>
+        /// Returns a list of territories from neighbouring bonuses that contain multiple borders on this bonus
+        /// </summary>
+        public List<BotTerritory> MultiBorderNeighbourTerritories
         {
             get
             {
@@ -99,7 +102,6 @@ namespace WarLight.Shared.AI.JBot.Bot
                 {
                     if (pair.Value > 1)
                     {
-                        AILog.Log("Order", pair.Key.Details.Name + ": " + pair.Value);
                         multiBorderTerritories.Add(pair.Key);
                     }
                 }
@@ -109,6 +111,9 @@ namespace WarLight.Shared.AI.JBot.Bot
             }
         }
 
+        /// <summary>
+        /// --ONLY ON PICKS-- Returns list of external picks that directly border bonus
+        /// </summary>
         public List<BotTerritory> FirstAdjacentPicks
         {
             get
@@ -131,6 +136,9 @@ namespace WarLight.Shared.AI.JBot.Bot
             }
         }
 
+        /// <summary>
+        /// --ONLY ON PICKS-- Returns list of external picks that border bonus after 1 turn (mutually exclusive with FirstAdjacentPicks)
+        /// </summary>
         public List<BotTerritory> SecondAdjacentPicks
         {
             get
