@@ -59,10 +59,19 @@ namespace WarLight.Shared.AI.JBot.Memory
                 AILog.Log("Cycle", "Able to determine cycle order through picks");
                 AILog.Log("Cycle", "\tOddTurnPriority: " + isOddTurnCycle);
             }
+            AILog.Log("Cycle", "Unable to determine cycle order through picks");
         }
 
+        /// <summary>
+        /// Sets the cycle order if not found already. Looks at deploys and attacks
+        /// </summary>
+        /// <param name="deployments"></param>
+        /// <param name="attackTransfers"></param>
+        /// <param name="meID"></param>
+        /// <param name="numberOfTurns"></param>
         public static void SetCycleOrders(List<GameOrderDeploy> deployments, List<GameOrderAttackTransfer> attackTransfers, PlayerIDType meID, int numberOfTurns)
         {
+            // TODO: incorporate checks for cards
             if (deployments[0].PlayerID != meID || attackTransfers[0].PlayerID != meID)
             {
                 Memory.CycleTracker.SetCycle(numberOfTurns % 2 == 1);
@@ -73,7 +82,7 @@ namespace WarLight.Shared.AI.JBot.Memory
                 AILog.Log("Cycle", "Turn " + numberOfTurns + ":\tOddTurnPriority: " + isOddTurnCycle);
             } else if (ParseListForOrder(attackTransfers, meID, numberOfTurns))
             {
-                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Able to determine cycle order through deployments");
+                AILog.Log("Cycle", "Turn " + numberOfTurns + ": Able to determine cycle order through attacks/transfers");
                 AILog.Log("Cycle", "Turn " + numberOfTurns + ":\tOddTurnPriority: " + isOddTurnCycle);
             } else
             {

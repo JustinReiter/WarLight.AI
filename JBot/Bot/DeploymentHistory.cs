@@ -28,9 +28,15 @@ namespace WarLight.Shared.AI.JBot.Bot
             OpponentDeployments[opponentID] = opponentDeployment;
             Memory.DeploymentTracker.SetDeploys(opponentID, opponentDeployment, BotState.NumberOfTurns - 1);
 
-            List<GameOrderDeploy> deployments = BotState.PrevTurn.OfType<GameOrderDeploy>().ToList();
-            List<GameOrderAttackTransfer> attackTransfers = BotState.PrevTurn.OfType<GameOrderAttackTransfer>().ToList();
-            Memory.CycleTracker.SetCycleOrders(deployments, attackTransfers, BotState.Me.ID, BotState.NumberOfTurns);
+            if (!Memory.CycleTracker.IsCycleFound())
+            {
+                // TODO: check for order priority/delay
+                List<GameOrderPlayCard> cards = BotState.PrevTurn.OfType<GameOrderPlayCard>().ToList();
+
+                List<GameOrderDeploy> deployments = BotState.PrevTurn.OfType<GameOrderDeploy>().ToList();
+                List<GameOrderAttackTransfer> attackTransfers = BotState.PrevTurn.OfType<GameOrderAttackTransfer>().ToList();
+                Memory.CycleTracker.SetCycleOrders(deployments, attackTransfers, BotState.Me.ID, BotState.NumberOfTurns);
+            }
         }
     }
 }
