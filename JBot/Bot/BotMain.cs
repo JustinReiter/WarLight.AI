@@ -198,7 +198,9 @@ namespace WarLight.Shared.AI.JBot.Bot
                         Debug.Debug.PrintPath(this.VisibleMap, final);
                     }
                 }
+                Memory.MapTracker.InitializeMap(this.VisibleMap, this);
             }
+            Memory.MapTracker.UpdateMap(this.VisibleMap);
             StatelessFogRemover.RemoveFog();
             //FogRemover.RemoveFog();
             this.HistoryTracker.ReadOpponentDeployment();
