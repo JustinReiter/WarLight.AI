@@ -19,10 +19,28 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             Assert.Fatal(BotState.NumberOfTurns != -1);
             if (BotState.NumberOfTurns == 0)
             {
+
+                List<TerritoryIDType> terrIds = new List<TerritoryIDType>();
+                // Adjacent enemy territories
                 foreach (var vmTerritory in BotState.VisibleMap.OpponentTerritories(opponentID))
                 {
                     var armies = BotState.Settings.MinimumArmyBonus;
+                    AILog.Log("Opponent Deploys: ", "Number of deploys on adjacent pick: " + armies);
                     MovesCommitter.CommittPlaceArmiesMove(new BotOrderDeploy(opponentID, vmTerritory, armies));
+
+                    terrIds.Add(vmTerritory.ID);
+                }
+
+                // Known enemy picks
+                foreach (var terrId in Memory.PickTracker.GetEnemyPickList())
+                {
+                    if (terrIds.Contains(terrId))
+                    {
+                        continue;
+                    }
+                    var armies = BotState.Settings.MinimumArmyBonus;
+                    AILog.Log("Opponent Deploys: ", "Number of deploys on known pick: " + armies);
+                    MovesCommitter.CommittPlaceArmiesMove(new BotOrderDeploy(opponentID, BotState.VisibleMap.Territories[terrId], armies));
                 }
             }
             else

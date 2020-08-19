@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -97,6 +100,7 @@
     <Compile Include="JBot\GameObjects\ComboBonuses.cs" />
     <Compile Include="JBot\Memory\CycleTracker.cs" />
     <Compile Include="JBot\Memory\DeploymentTracker.cs" />
+    <Compile Include="JBot\Memory\MapTracker.cs" />
     <Compile Include="JBot\Memory\PickTracker.cs" />
     <Compile Include="Prod\BonusPath.cs" />
     <Compile Include="Prod\BotMain.cs" />
