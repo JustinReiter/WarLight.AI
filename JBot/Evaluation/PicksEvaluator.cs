@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using WarLight.Shared.AI.JBot.BasicAlgorithms;
 using WarLight.Shared.AI.JBot.Bot;
 using WarLight.Shared.AI.JBot.GameObjects;
 
@@ -50,11 +51,120 @@ namespace WarLight.Shared.AI.JBot.Evaluation
                 }
             });
 
-            
-                foreach (TerritoryIDType terrID in weights.Keys)
+          
+
+            TerritoryIDType[] terrIDs = weights.Keys.OrderByDescending(a => weights[a]).ToArray();
+
+            foreach (TerritoryIDType terrID in terrIDs)
             {
                 AILog.Log("Pick Values", map.Territories[terrID].Bonuses[0] + ": " + weights[terrID]);
             }
+
+            List<TerritoryIDType> picks = weights.Keys.OrderByDescending(a => weights[a]).ToList();
+
+            Memory.PickTracker.SetPickList(picks);
+            BotMap storedMap = BotState.VisibleMap.GetMapCopy();
+            Memory.PickTracker.pickMap = storedMap;
+
+            //Pick 3 und 4 based on coverage ändern
+
+            double min_coverage = 6;
+            int current_pick_to_check = 2;
+
+            while (current_pick_to_check < picks.Count)
+            {
+                PathNode dist_1 = Dijkstra.ShortestPath(map, map.Territories[picks[0]], map.Territories[picks[1]]);
+                double distance_1 = dist_1.minPath.Count;
+                PathNode dist_2 = Dijkstra.ShortestPath(map, map.Territories[picks[0]], map.Territories[picks[current_pick_to_check]]);
+                double distance_2 = dist_2.minPath.Count;
+                PathNode dist_3 = Dijkstra.ShortestPath(map, map.Territories[picks[1]], map.Territories[picks[current_pick_to_check]]);
+                double distance_3 = dist_3.minPath.Count;
+
+                double actual_coverage = (distance_1 + distance_2 + distance_3) / 3;
+
+                if (actual_coverage < min_coverage)
+                {
+                    current_pick_to_check++;
+                }
+                else
+                {
+                    TerritoryIDType swap = picks[2];
+                    picks[2] = picks[current_pick_to_check];
+                    picks[current_pick_to_check] = swap;
+                    break;
+                }
+            }
+
+            double min_coverage2 = 5;
+            int current_pick_to_check2 = 3;
+
+            while (current_pick_to_check < picks.Count)
+            {
+                PathNode dist_1 = Dijkstra.ShortestPath(map, map.Territories[picks[0]], map.Territories[picks[1]]);
+                double distance_1 = dist_1.minPath.Count;
+                PathNode dist_2 = Dijkstra.ShortestPath(map, map.Territories[picks[0]], map.Territories[picks[2]]);
+                double distance_2 = dist_2.minPath.Count;
+                PathNode dist_3 = Dijkstra.ShortestPath(map, map.Territories[picks[0]], map.Territories[picks[current_pick_to_check2]]);
+                double distance_3 = dist_3.minPath.Count;
+                PathNode dist_4 = Dijkstra.ShortestPath(map, map.Territories[picks[1]], map.Territories[picks[2]]);
+                double distance_4 = dist_4.minPath.Count;
+                PathNode dist_5 = Dijkstra.ShortestPath(map, map.Territories[picks[1]], map.Territories[picks[current_pick_to_check2]]);
+                double distance_5 = dist_5.minPath.Count;
+                PathNode dist_6 = Dijkstra.ShortestPath(map, map.Territories[picks[2]], map.Territories[picks[current_pick_to_check2]]);
+                double distance_6 = dist_6.minPath.Count;
+
+                double actual_coverage = (distance_1 + distance_2 + distance_3 + distance_4 + distance_5 + distance_6) / 6;
+
+                if (actual_coverage < min_coverage2)
+                {
+                    current_pick_to_check++;
+                }
+                else
+                {
+                    TerritoryIDType swap = picks[3];
+                    picks[3] = picks[current_pick_to_check2];
+                    picks[current_pick_to_check2] = swap;
+                    break;
+                }
+            }
+
+
+            //List<BotTerritory> test = BasicAlgorithms.DistanceCalculator.GetShortestPathToTerritories(map, map.Territories[picks[0]]), map.Territories, emptyList);
+
+            //Konter für 4 oder 5 picken als 6
+
+            foreach (BotTerritory terri in map.Territories[picks[4]].Bonuses[0].Territories)
+            {
+                foreach (BotTerritory terri_neigh in terri.Neighbors)
+                {
+                    if (picks.Contains(terri_neigh.ID) && !picks.GetRange(0,5).Contains(terri_neigh.ID))
+                    {
+                        picks[5] = terri_neigh.ID;
+                        goto PickFound;
+                        
+                    }
+                }
+            }
+
+            foreach (BotTerritory terri in map.Territories[picks[3]].Bonuses[0].Territories)
+            {
+                foreach (BotTerritory terri_neigh in terri.Neighbors)
+                {
+                    if (picks.Contains(terri_neigh.ID) && !picks.GetRange(0, 5).Contains(terri_neigh.ID))
+                    {
+                        picks[5] = terri_neigh.ID;
+                        goto PickFound;
+
+                    }
+                }
+            }
+
+        PickFound:
+
+            picks = picks.GetRange(0, 6);
+            return picks;
+            }
+            /*
             
             // Check for FTBs and assign value for Aus based on Ant Wasteland boolean
             List<ComboBonuses> firstTurnBonusList = new List<ComboBonuses>();
@@ -136,11 +246,13 @@ namespace WarLight.Shared.AI.JBot.Evaluation
             return picks;
         }
 
-        /// <summary>
-        /// Prioritizes combos or FTBs that contain less picks adjacent to the bonus. Also places Sub Combos at bottom of list with exception of counterable combos
-        /// </summary>
-        /// <param name="list"></param>
-        private void ReorderCombosByNumberOfTerritories(ref List<ComboBonuses> list)
+        */
+
+            /// <summary>
+            /// Prioritizes combos or FTBs that contain less picks adjacent to the bonus. Also places Sub Combos at bottom of list with exception of counterable combos
+            /// </summary>
+            /// <param name="list"></param>
+            private void ReorderCombosByNumberOfTerritories(ref List<ComboBonuses> list)
         {
             List<TerritoryIDType> seenPickIDs = new List<TerritoryIDType>();
             for (int i = 0; i < list.Count; i++)
